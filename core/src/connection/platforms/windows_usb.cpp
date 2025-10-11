@@ -1,14 +1,15 @@
 #define NOMINMAX
 #include <windows.h>
-#include <setupapi.h>
 extern "C"
 {
 #include <hidsdi.h>
 }
+#include <setupapi.h>
 #include <initguid.h>
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <spdlog/spdlog.h>
 
 #include "tomtom/defines.hpp"
 #include "tomtom/connection/usb_connection.hpp"
@@ -50,8 +51,7 @@ namespace tomtom
 
             if (deviceInfoSet == INVALID_HANDLE_VALUE)
             {
-                std::cerr << "Failed to get device information set. Error: "
-                          << GetLastError() << std::endl;
+                spdlog::error("Failed to get device information set. Error: {}", GetLastError());
                 return devices;
             }
 
@@ -156,20 +156,12 @@ namespace tomtom
                                 }
 
                                 devices.push_back(info);
-
-                                std::cout << "Found TomTom device:" << std::endl;
-                                std::cout << "  VID: 0x" << std::hex << info.vendor_id << std::endl;
-                                std::cout << "  PID: 0x" << std::hex << info.product_id << std::endl;
-                                std::cout << "  Manufacturer: " << info.manufacturer << std::endl;
-                                std::cout << "  Product: " << info.product_name << std::endl;
-                                std::cout << "  Serial: " << info.serial_number << std::endl;
-                                std::cout << "  Path: " << info.device_path << std::endl;
+                                spdlog::info("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Serial={}, Path={}", info.vendor_id, info.product_id, info.serial_number, info.device_path);
                             }
                         }
                         else
                         {
-                            std::cerr << "Failed to get HID attributes. Error: "
-                                      << GetLastError() << std::endl;
+                            spdlog::error("Failed to get HID attributes. Error: {}", GetLastError());
                         }
 
                         CloseHandle(hDevice);
@@ -181,7 +173,7 @@ namespace tomtom
 
             SetupDiDestroyDeviceInfoList(deviceInfoSet);
 
-            std::cout << "Found " << devices.size() << " TomTom device(s)" << std::endl;
+            spdlog::info("Found {} TomTom device(s)", devices.size());
 
             return devices;
         }
@@ -205,7 +197,7 @@ namespace tomtom
 
             if (device_handle == INVALID_HANDLE_VALUE)
             {
-                std::cerr << "Failed to open device. Error: " << GetLastError() << std::endl;
+                spdlog::error("Failed to open device. Error: {}", GetLastError());
                 return false;
             }
 
@@ -215,7 +207,7 @@ namespace tomtom
 
             if (!HidD_GetAttributes(device_handle, &attributes))
             {
-                std::cerr << "Failed to get HID attributes. Error: " << GetLastError() << std::endl;
+                spdlog::error("Failed to get HID attributes. Error: {}", GetLastError());
                 CloseHandle(device_handle);
                 device_handle = INVALID_HANDLE_VALUE;
                 return false;
@@ -231,11 +223,7 @@ namespace tomtom
                     capabilities.input_len = caps_raw.InputReportByteLength;
                     capabilities.output_len = caps_raw.OutputReportByteLength;
                     capabilities.feature_len = caps_raw.FeatureReportByteLength;
-
-                    std::cout << "HID Capabilities:\n";
-                    std::cout << "  Input  = " << capabilities.input_len << "\n";
-                    std::cout << "  Output = " << capabilities.output_len << "\n";
-                    std::cout << "  Feature= " << capabilities.feature_len << "\n";
+                    spdlog::info("HID Capabilities: InputLen={}, OutputLen={}, FeatureLen={}", capabilities.input_len, capabilities.output_len, capabilities.feature_len);
                 }
                 HidD_FreePreparsedData(preparsedData);
             }
@@ -291,7 +279,7 @@ namespace tomtom
                 {
                     return 0; // Timeout, no data
                 }
-                std::cerr << "HID Read failed. Error: " << error << std::endl;
+                spdlog::error("HID Read failed. Error: {}", error);
                 return -1;
             }
 
@@ -342,7 +330,7 @@ namespace tomtom
                 {
                     return 0;
                 }
-                std::cerr << "HID Write failed. Error: " << error << std::endl;
+                spdlog::error("HID Write failed. Error: {}", error);
                 return -1;
             }
 

@@ -23,6 +23,18 @@ add_library(core STATIC
     src/connection/usb_connection.cpp
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.15.3 # (or the latest stable tag)
+)
+
+FetchContent_MakeAvailable(spdlog)
+
+target_link_libraries(core PRIVATE spdlog::spdlog)
+
 # Platform-specific sources
 if(UNIX AND NOT APPLE)
     target_sources(core PRIVATE
@@ -69,7 +81,7 @@ if(BUILD_TESTS)
     foreach(test_src ${TEST_SOURCES})
         get_filename_component(test_name ${test_src} NAME_WE)
         add_executable(${test_name} ${test_src})
-        target_link_libraries(${test_name} PRIVATE core)
+        target_link_libraries(${test_name} PRIVATE core spdlog::spdlog)
         add_test(NAME ${test_name} COMMAND ${test_name})
     endforeach()
 endif()
