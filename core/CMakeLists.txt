@@ -71,7 +71,7 @@ target_include_directories(core
 # =========================================================
 # Testing setup
 # =========================================================
-option(BUILD_TESTS "Build test executables" ON)
+option(BUILD_TESTS "Build test executables" OFF)
 
 if(BUILD_TESTS)
     enable_testing()
@@ -84,4 +84,22 @@ if(BUILD_TESTS)
         target_link_libraries(${test_name} PRIVATE core spdlog::spdlog)
         add_test(NAME ${test_name} COMMAND ${test_name})
     endforeach()
+endif()
+
+# =========================================================
+# Doxygen documentation
+# =========================================================
+find_package(Doxygen)
+option(GENERATED_DOCS "Generate documentation with Doxygen" OFF)
+
+if(DOXYGEN_FOUND AND GENERATED_DOCS)
+    add_custom_target(doxygen
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    message(STATUS "Doxygen build enabled. Run `make doxygen` (or `cmake --build . --target doxygen`).")
+else()
+    message(WARNING "Doxygen not found. Documentation target will not be available.")
 endif()

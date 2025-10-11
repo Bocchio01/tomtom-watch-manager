@@ -1,0 +1,35 @@
+name: Doxygen Action
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  doxygen-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: get doxygen-awesome-css
+      run: |
+        git submodule update --init --recursive
+        cd core/docs/doxygen-awesome-css
+        git fetch --tags
+        git checkout v2.4.0
+
+
+    - name: doxygen-action
+      uses: mattnotmitt/doxygen-action@v1.9.5
+      with:
+        doxyfile-path: "./Doxyfile"
+        working-directory: "."
+        enable-latex: false
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./core/docs/html
