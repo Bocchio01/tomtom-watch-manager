@@ -1,14 +1,33 @@
-#include <vector>
-#include <string>
+#define NOMINMAX
+#include <windows.h>
+#include <setupapi.h>
+extern "C"
+{
+#include <hidsdi.h>
+}
+#include <initguid.h>
+#include <iostream>
+#include <sstream>
+#include <cstring>
 
+#include "tomtom/defines.hpp"
 #include "tomtom/connection/usb_connection.hpp"
+#include "tomtom/connection/platforms/windows_usb.hpp"
 #include "tomtom/connection/platforms/windows_usb.hpp"
 
 namespace tomtom
 {
     namespace platforms
     {
-        WindowsUSBImpl::WindowsUSBImpl(const DeviceInfo &info) : device_info(info), is_open(false) {}
+
+        WindowsUSBImpl::WindowsUSBImpl(const DeviceInfo &info)
+            : device_info(info),
+              device_handle(INVALID_HANDLE_VALUE),
+              usb_handle(nullptr),
+              is_open(false)
+        {
+        }
+
         WindowsUSBImpl::~WindowsUSBImpl()
         {
             close();
@@ -16,52 +35,325 @@ namespace tomtom
 
         std::vector<DeviceInfo> WindowsUSBImpl::enumerateDevices()
         {
-            // Windows-specific implementation to enumerate USB devices
             std::vector<DeviceInfo> devices;
-            // ... (implementation details)
+
+            // Get HID GUID
+            GUID hidGuid;
+            HidD_GetHidGuid(&hidGuid);
+
+            // Get device information set for HID devices
+            HDEVINFO deviceInfoSet = SetupDiGetClassDevsA(
+                &hidGuid,
+                nullptr,
+                nullptr,
+                DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+
+            if (deviceInfoSet == INVALID_HANDLE_VALUE)
+            {
+                std::cerr << "Failed to get device information set. Error: "
+                          << GetLastError() << std::endl;
+                return devices;
+            }
+
+            SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
+            deviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+
+            // Enumerate all HID devices
+            for (DWORD i = 0; SetupDiEnumDeviceInterfaces(
+                     deviceInfoSet,
+                     nullptr,
+                     &hidGuid,
+                     i,
+                     &deviceInterfaceData);
+                 i++)
+            {
+
+                // Get required buffer size
+                DWORD requiredSize = 0;
+                SetupDiGetDeviceInterfaceDetailA(
+                    deviceInfoSet,
+                    &deviceInterfaceData,
+                    nullptr,
+                    0,
+                    &requiredSize,
+                    nullptr);
+
+                // Allocate buffer for device interface detail
+                PSP_DEVICE_INTERFACE_DETAIL_DATA_A deviceInterfaceDetailData =
+                    (PSP_DEVICE_INTERFACE_DETAIL_DATA_A)malloc(requiredSize);
+
+                if (!deviceInterfaceDetailData)
+                {
+                    continue;
+                }
+
+                deviceInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_A);
+
+                SP_DEVINFO_DATA deviceInfoData;
+                deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+                // Get device interface detail
+                if (SetupDiGetDeviceInterfaceDetailA(
+                        deviceInfoSet,
+                        &deviceInterfaceData,
+                        deviceInterfaceDetailData,
+                        requiredSize,
+                        nullptr,
+                        &deviceInfoData))
+                {
+
+                    // Open device handle for HID
+                    HANDLE hDevice = CreateFileA(
+                        deviceInterfaceDetailData->DevicePath,
+                        GENERIC_READ | GENERIC_WRITE,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE,
+                        nullptr,
+                        OPEN_EXISTING,
+                        0, // No overlapped for HID
+                        nullptr);
+
+                    if (hDevice != INVALID_HANDLE_VALUE)
+                    {
+                        // Get HID attributes (VID/PID)
+                        HIDD_ATTRIBUTES attributes;
+                        attributes.Size = sizeof(HIDD_ATTRIBUTES);
+
+                        if (HidD_GetAttributes(hDevice, &attributes))
+                        {
+                            // Check if this is a TomTom device
+                            if (attributes.VendorID == TOMTOM_VENDOR_ID)
+                            {
+                                DeviceInfo info;
+                                info.vendor_id = attributes.VendorID;
+                                info.product_id = attributes.ProductID;
+                                info.device_path = std::string(deviceInterfaceDetailData->DevicePath);
+
+                                // Get manufacturer string
+                                wchar_t manufacturerBuffer[256] = {0};
+                                if (HidD_GetManufacturerString(hDevice, manufacturerBuffer,
+                                                               sizeof(manufacturerBuffer)))
+                                {
+                                    std::wstring wMfg(manufacturerBuffer);
+                                    info.manufacturer = std::string(wMfg.begin(), wMfg.end());
+                                }
+
+                                // Get product string
+                                wchar_t productBuffer[256] = {0};
+                                if (HidD_GetProductString(hDevice, productBuffer,
+                                                          sizeof(productBuffer)))
+                                {
+                                    std::wstring wProd(productBuffer);
+                                    info.product_name = std::string(wProd.begin(), wProd.end());
+                                }
+
+                                // Get serial number
+                                wchar_t serialBuffer[256] = {0};
+                                if (HidD_GetSerialNumberString(hDevice, serialBuffer,
+                                                               sizeof(serialBuffer)))
+                                {
+                                    std::wstring wSerial(serialBuffer);
+                                    info.serial_number = std::string(wSerial.begin(), wSerial.end());
+                                }
+
+                                devices.push_back(info);
+
+                                std::cout << "Found TomTom device:" << std::endl;
+                                std::cout << "  VID: 0x" << std::hex << info.vendor_id << std::endl;
+                                std::cout << "  PID: 0x" << std::hex << info.product_id << std::endl;
+                                std::cout << "  Manufacturer: " << info.manufacturer << std::endl;
+                                std::cout << "  Product: " << info.product_name << std::endl;
+                                std::cout << "  Serial: " << info.serial_number << std::endl;
+                                std::cout << "  Path: " << info.device_path << std::endl;
+                            }
+                        }
+                        else
+                        {
+                            std::cerr << "Failed to get HID attributes. Error: "
+                                      << GetLastError() << std::endl;
+                        }
+
+                        CloseHandle(hDevice);
+                    }
+                }
+
+                free(deviceInterfaceDetailData);
+            }
+
+            SetupDiDestroyDeviceInfoList(deviceInfoSet);
+
+            std::cout << "Found " << devices.size() << " TomTom device(s)" << std::endl;
+
             return devices;
         }
 
         bool WindowsUSBImpl::open()
         {
-            // Windows-specific implementation to open USB connection
-            // ... (implementation details)
-            return true; // Return true if successful
+            if (is_open)
+            {
+                return true;
+            }
+
+            // Open device handle for HID (no FILE_FLAG_OVERLAPPED needed for sync operations)
+            device_handle = CreateFileA(
+                device_info.device_path.c_str(),
+                GENERIC_READ | GENERIC_WRITE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                nullptr,
+                OPEN_EXISTING,
+                0, // Synchronous I/O
+                nullptr);
+
+            if (device_handle == INVALID_HANDLE_VALUE)
+            {
+                std::cerr << "Failed to open device. Error: " << GetLastError() << std::endl;
+                return false;
+            }
+
+            // Verify it's a HID device
+            HIDD_ATTRIBUTES attributes;
+            attributes.Size = sizeof(HIDD_ATTRIBUTES);
+
+            if (!HidD_GetAttributes(device_handle, &attributes))
+            {
+                std::cerr << "Failed to get HID attributes. Error: " << GetLastError() << std::endl;
+                CloseHandle(device_handle);
+                device_handle = INVALID_HANDLE_VALUE;
+                return false;
+            }
+
+            // Get preparsed data for capabilities
+            PHIDP_PREPARSED_DATA preparsedData;
+            if (HidD_GetPreparsedData(device_handle, &preparsedData))
+            {
+                HIDP_CAPS caps_raw;
+                if (HidP_GetCaps(preparsedData, &caps_raw) == HIDP_STATUS_SUCCESS)
+                {
+                    capabilities.input_len = caps_raw.InputReportByteLength;
+                    capabilities.output_len = caps_raw.OutputReportByteLength;
+                    capabilities.feature_len = caps_raw.FeatureReportByteLength;
+
+                    std::cout << "HID Capabilities:\n";
+                    std::cout << "  Input  = " << capabilities.input_len << "\n";
+                    std::cout << "  Output = " << capabilities.output_len << "\n";
+                    std::cout << "  Feature= " << capabilities.feature_len << "\n";
+                }
+                HidD_FreePreparsedData(preparsedData);
+            }
+
+            is_open = true;
+            return true;
         }
 
         void WindowsUSBImpl::close()
         {
-            // Windows-specific implementation to close USB connection
-            // ... (implementation details)
+            if (!is_open)
+            {
+                return;
+            }
+
+            if (device_handle != INVALID_HANDLE_VALUE)
+            {
+                CloseHandle(device_handle);
+                device_handle = INVALID_HANDLE_VALUE;
+            }
+
+            is_open = false;
         }
 
         bool WindowsUSBImpl::isOpen() const
         {
-            // Windows-specific implementation to check if USB connection is open
-            // ... (implementation details)
-            return false; // Return true if open
+            return is_open;
         }
 
         int WindowsUSBImpl::read(uint8_t *buffer, size_t size, int timeout_ms)
         {
-            // Windows-specific implementation to read data from USB device
-            // ... (implementation details)
-            return 0; // Return number of bytes read or error code
+            if (!is_open || device_handle == INVALID_HANDLE_VALUE)
+            {
+                return -1;
+            }
+
+            std::vector<UCHAR> inputBuffer(capabilities.input_len);
+            DWORD bytesRead = 0;
+
+            // HID read - synchronous
+            BOOL result = ReadFile(
+                device_handle,
+                inputBuffer.data(),
+                capabilities.input_len,
+                &bytesRead,
+                nullptr // Synchronous operation
+            );
+
+            if (!result)
+            {
+                DWORD error = GetLastError();
+                if (error == ERROR_TIMEOUT)
+                {
+                    return 0; // Timeout, no data
+                }
+                std::cerr << "HID Read failed. Error: " << error << std::endl;
+                return -1;
+            }
+
+            // Copy data to user buffer (skip report ID if present)
+            size_t offset = (inputBuffer[0] == 0) ? 1 : 0; // Skip report ID byte if 0
+            size_t dataToCopy = std::min(size, static_cast<size_t>(bytesRead - offset));
+
+            if (dataToCopy > 0)
+            {
+                std::memcpy(buffer, inputBuffer.data() + offset, dataToCopy);
+            }
+
+            return static_cast<int>(dataToCopy);
         }
 
         int WindowsUSBImpl::write(const uint8_t *buffer, size_t size, int timeout_ms)
         {
-            // Windows-specific implementation to write data to USB device
-            // ... (implementation details)
-            return 0; // Return number of bytes written or error code
+            if (!is_open || device_handle == INVALID_HANDLE_VALUE)
+            {
+                return -1;
+            }
+
+            // Allocate buffer for HID output report
+            std::vector<UCHAR> outputBuffer(capabilities.output_len, 0);
+
+            // Set report ID (usually 0 for single-report devices)
+            outputBuffer[0] = 0x00;
+
+            // Copy user data (limit to output report size minus report ID)
+            size_t maxDataSize = capabilities.output_len - 1;
+            size_t dataToCopy = std::min(size, maxDataSize);
+            std::memcpy(outputBuffer.data() + 1, buffer, dataToCopy);
+
+            DWORD bytesWritten = 0;
+
+            // HID write - synchronous
+            BOOL result = WriteFile(
+                device_handle,
+                outputBuffer.data(),
+                capabilities.output_len, // Must write full report length
+                &bytesWritten,
+                nullptr);
+
+            if (!result)
+            {
+                DWORD error = GetLastError();
+                if (error == ERROR_TIMEOUT)
+                {
+                    return 0;
+                }
+                std::cerr << "HID Write failed. Error: " << error << std::endl;
+                return -1;
+            }
+
+            // Return actual data bytes written (excluding report ID)
+            return static_cast<int>(dataToCopy);
         }
 
         std::string WindowsUSBImpl::getDevicePath() const
         {
-            // Windows-specific implementation to get device path
-            // ... (implementation details)
-            return ""; // Return device path as string
+            return device_info.device_path;
         }
 
-    }
-}
+    } // namespace platforms
+} // namespace tomtom

@@ -36,7 +36,12 @@ elseif(WIN32)
     target_sources(core PRIVATE
         src/connection/platforms/windows_usb.cpp
     )
-    target_link_libraries(core PUBLIC setupapi winusb)
+    target_compile_definitions(core PRIVATE
+        UNICODE
+        _UNICODE
+    )
+    target_link_libraries(core PUBLIC setupapi winusb hid)
+
 elseif(APPLE)
     target_sources(core PRIVATE
         src/connection/platforms/macos_usb.cpp
