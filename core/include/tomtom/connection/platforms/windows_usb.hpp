@@ -29,9 +29,11 @@ namespace tomtom
         private:
             HANDLE device_handle = INVALID_HANDLE_VALUE;
             WINUSB_INTERFACE_HANDLE usb_handle = nullptr;
-            DeviceInfo device_info;
             HidCaps capabilities;
             bool is_open = false;
+            DeviceInfo device_info;
+            uint8_t write_endpoint;
+            uint8_t read_endpoint;
 
         public:
             explicit WindowsUSBImpl(const DeviceInfo &info);
@@ -42,9 +44,9 @@ namespace tomtom
             bool isOpen() const;
             int read(uint8_t *buffer, size_t size, int timeout_ms);
             int write(const uint8_t *buffer, size_t size, int timeout_ms);
-            std::string getDevicePath() const;
 
             static std::vector<DeviceInfo> enumerateDevices();
+            const DeviceInfo &getDeviceInfo() const { return device_info; }
         };
 
     } // namespace platform

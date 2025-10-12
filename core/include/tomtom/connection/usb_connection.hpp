@@ -51,13 +51,18 @@ namespace tomtom
         bool isOpen() const;
         int read(uint8_t *buffer, size_t size, int timeout_ms);
         int write(const uint8_t *buffer, size_t size, int timeout_ms);
-        std::string getDevicePath() const;
 
         /**
          * @brief Enumerates all connected TomTom devices.
          * @return Vector of device information structures.
          */
         static std::vector<DeviceInfo> enumerateDevices();
+
+        /**
+         * @brief Gets the device information for this connection.
+         * @return Reference to the DeviceInfo structure.
+         */
+        const DeviceInfo &getDeviceInfo() const;
     };
 
 } // namespace tomtom

@@ -66,12 +66,19 @@ endif()
 target_include_directories(core
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+set_target_properties(core PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
 )
 
 # =========================================================
 # Testing setup
 # =========================================================
-option(BUILD_TESTS "Build test executables" OFF)
+option(BUILD_TESTS "Build test executables" ON)
 
 if(BUILD_TESTS)
     enable_testing()
@@ -90,7 +97,7 @@ endif()
 # Doxygen documentation
 # =========================================================
 find_package(Doxygen)
-option(GENERATED_DOCS "Generate documentation with Doxygen" OFF)
+option(GENERATED_DOCS "Generate documentation with Doxygen" ON)
 
 if(DOXYGEN_FOUND AND GENERATED_DOCS)
     add_custom_target(doxygen

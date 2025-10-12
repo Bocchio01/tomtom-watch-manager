@@ -3,11 +3,42 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
+#include <ctime>
 
 #include "tomtom/connection/usb_connection.hpp"
 
 namespace tomtom
 {
+    enum class WatchError
+    {
+        NoError,
+        UnableToSendPacket,
+        UnableToReceivePacket,
+        InvalidResponse,
+        IncorrectResponseLength,
+        OutOfSyncResponse,
+        UnexpectedResponse,
+        NoMatchingWatch,
+        NotAWatch,
+        UnableToOpenDevice,
+        FileOpen,
+        FileNotOpen,
+        NoMoreFiles,
+        VerifyError,
+        ParseError,
+        NoData,
+        InvalidParameter,
+    };
+
+    struct WatchInfo
+    {
+        uint32_t product_id;
+        uint32_t firmware_version;
+        uint32_t ble_version;
+        std::string serial_number;
+        std::string manufacturer;
+        std::string product_name;
+    };
 
     /**
      * @brief Represents a TomTom watch device and provides access to its data.
@@ -15,14 +46,8 @@ namespace tomtom
     class Watch
     {
 
-    private:
-        // Are these properties needed here or can be fetched on demand from connection?
-        uint32_t product_id = 0;
-        uint32_t firmware_version = 0;
-        uint32_t ble_version = 0;
-        std::string serial_number = "";
-
     public:
+        WatchInfo info;
         std::unique_ptr<USBConnection> connection;
 
     public:
@@ -44,9 +69,19 @@ namespace tomtom
         Watch &operator=(Watch &&) noexcept;
 
         // Getters for watch properties
-        uint32_t getProductId() const { return product_id; }
-        uint32_t getFirmwareVersion() const { return firmware_version; }
-        std::string getSerialNumber() const { return serial_number; }
+        uint32_t getProductId() const { return info.product_id; }
+        std::string getSerialNumber() const { return info.serial_number; }
+        std::string getManufacturer() const { return info.manufacturer; }
+        std::string getProductName() const { return info.product_name; }
+        WatchError getCurrentTime(std::time_t &time);
+
+        WatchError startUp();
+        WatchError sendPacket(
+            uint8_t msg,
+            uint8_t tx_length,
+            const uint8_t *tx_data,
+            uint8_t rx_length,
+            uint8_t *rx_data);
     };
 
 }

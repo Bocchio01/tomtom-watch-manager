@@ -14,7 +14,6 @@ extern "C"
 #include "tomtom/defines.hpp"
 #include "tomtom/connection/usb_connection.hpp"
 #include "tomtom/connection/platforms/windows_usb.hpp"
-#include "tomtom/connection/platforms/windows_usb.hpp"
 
 namespace tomtom
 {
@@ -156,7 +155,8 @@ namespace tomtom
                                 }
 
                                 devices.push_back(info);
-                                spdlog::info("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Serial={}, Path={}", info.vendor_id, info.product_id, info.serial_number, info.device_path);
+                                spdlog::debug("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Serial={}, Path={}",
+                                              info.vendor_id, info.product_id, info.serial_number, info.device_path);
                             }
                         }
                         else
@@ -173,7 +173,7 @@ namespace tomtom
 
             SetupDiDestroyDeviceInfoList(deviceInfoSet);
 
-            spdlog::info("Found {} TomTom device(s)", devices.size());
+            spdlog::debug("Found {} TomTom device(s)", devices.size());
 
             return devices;
         }
@@ -223,7 +223,8 @@ namespace tomtom
                     capabilities.input_len = caps_raw.InputReportByteLength;
                     capabilities.output_len = caps_raw.OutputReportByteLength;
                     capabilities.feature_len = caps_raw.FeatureReportByteLength;
-                    spdlog::info("HID Capabilities: InputLen={}, OutputLen={}, FeatureLen={}", capabilities.input_len, capabilities.output_len, capabilities.feature_len);
+                    spdlog::debug("HID Capabilities: InputLen={}, OutputLen={}, FeatureLen={}",
+                                  capabilities.input_len, capabilities.output_len, capabilities.feature_len);
                 }
                 HidD_FreePreparsedData(preparsedData);
             }
@@ -253,6 +254,7 @@ namespace tomtom
             return is_open;
         }
 
+        // Fixed read function - DO NOT skip first byte!
         int WindowsUSBImpl::read(uint8_t *buffer, size_t size, int timeout_ms)
         {
             if (!is_open || device_handle == INVALID_HANDLE_VALUE)
@@ -269,32 +271,29 @@ namespace tomtom
                 inputBuffer.data(),
                 capabilities.input_len,
                 &bytesRead,
-                nullptr // Synchronous operation
-            );
+                nullptr);
 
             if (!result)
             {
                 DWORD error = GetLastError();
-                if (error == ERROR_TIMEOUT)
-                {
-                    return 0; // Timeout, no data
-                }
                 spdlog::error("HID Read failed. Error: {}", error);
                 return -1;
             }
 
-            // Copy data to user buffer (skip report ID if present)
-            size_t offset = (inputBuffer[0] == 0) ? 1 : 0; // Skip report ID byte if 0
-            size_t dataToCopy = std::min(size, static_cast<size_t>(bytesRead - offset));
+            spdlog::debug("HID Read: {} bytes", bytesRead);
+
+            // Copy data directly - NO offset for report ID!
+            size_t dataToCopy = std::min(size, static_cast<size_t>(bytesRead));
 
             if (dataToCopy > 0)
             {
-                std::memcpy(buffer, inputBuffer.data() + offset, dataToCopy);
+                std::memcpy(buffer, inputBuffer.data(), dataToCopy);
             }
 
             return static_cast<int>(dataToCopy);
         }
 
+        // Fixed write function - DO NOT prepend report ID!
         int WindowsUSBImpl::write(const uint8_t *buffer, size_t size, int timeout_ms)
         {
             if (!is_open || device_handle == INVALID_HANDLE_VALUE)
@@ -302,45 +301,35 @@ namespace tomtom
                 return -1;
             }
 
-            // Allocate buffer for HID output report
+            // For TomTom watches, we write the EXACT packet directly
+            // NO report ID byte needed!
             std::vector<UCHAR> outputBuffer(capabilities.output_len, 0);
 
-            // Set report ID (usually 0 for single-report devices)
-            outputBuffer[0] = 0x00;
+            // Copy user data directly (no offset for report ID)
+            size_t dataToCopy = std::min(size, static_cast<size_t>(capabilities.output_len));
+            std::memcpy(outputBuffer.data(), buffer, dataToCopy);
 
-            // Copy user data (limit to output report size minus report ID)
-            size_t maxDataSize = capabilities.output_len - 1;
-            size_t dataToCopy = std::min(size, maxDataSize);
-            std::memcpy(outputBuffer.data() + 1, buffer, dataToCopy);
+            // Pad the rest with zeros (already done by vector initialization)
 
             DWORD bytesWritten = 0;
 
-            // HID write - synchronous
+            // Write the full output report
             BOOL result = WriteFile(
                 device_handle,
                 outputBuffer.data(),
-                capabilities.output_len, // Must write full report length
+                capabilities.output_len,
                 &bytesWritten,
                 nullptr);
 
             if (!result)
             {
                 DWORD error = GetLastError();
-                if (error == ERROR_TIMEOUT)
-                {
-                    return 0;
-                }
                 spdlog::error("HID Write failed. Error: {}", error);
                 return -1;
             }
 
-            // Return actual data bytes written (excluding report ID)
+            spdlog::debug("HID Write successful: {} bytes written", bytesWritten);
             return static_cast<int>(dataToCopy);
-        }
-
-        std::string WindowsUSBImpl::getDevicePath() const
-        {
-            return device_info.device_path;
         }
 
     } // namespace platforms

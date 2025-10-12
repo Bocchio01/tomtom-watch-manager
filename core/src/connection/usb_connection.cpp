@@ -22,9 +22,7 @@ namespace tomtom
         explicit Impl(const DeviceInfo &info) : platform_impl(info) {}
     };
 
-    USBConnection::USBConnection(const DeviceInfo &device_info)
-        : pImpl(std::make_unique<Impl>(device_info)) {}
-
+    USBConnection::USBConnection(const DeviceInfo &device_info) : pImpl(std::make_unique<Impl>(device_info)) {}
     USBConnection::~USBConnection() = default;
 
     USBConnection::USBConnection(USBConnection &&) noexcept = default;
@@ -55,14 +53,14 @@ namespace tomtom
         return pImpl->platform_impl.write(buffer, size, timeout_ms);
     }
 
-    std::string USBConnection::getDevicePath() const
-    {
-        return pImpl->platform_impl.getDevicePath();
-    }
-
     std::vector<DeviceInfo> USBConnection::enumerateDevices()
     {
         return PlatformImpl::enumerateDevices();
+    }
+
+    const DeviceInfo &USBConnection::getDeviceInfo() const
+    {
+        return pImpl->platform_impl.getDeviceInfo();
     }
 
 } // namespace tomtom

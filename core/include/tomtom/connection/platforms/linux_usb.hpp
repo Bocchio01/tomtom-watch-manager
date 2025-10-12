@@ -16,8 +16,10 @@ namespace tomtom
         private:
             libusb_context *context = nullptr;
             libusb_device_handle *handle = nullptr;
-            DeviceInfo device_info;
             bool is_open = false;
+
+        public:
+            DeviceInfo device_info;
 
         public:
             explicit LinuxUSBImpl(const DeviceInfo &info);

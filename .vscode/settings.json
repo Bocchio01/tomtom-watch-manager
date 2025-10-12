@@ -1,11 +1,13 @@
 {
+    "workbench.tree.indent": 40,
     "cmake.sourceDirectory": [
         // "${workspaceFolder}",
         "${workspaceFolder}/core",
         "${workspaceFolder}/cli",
         // "${workspaceFolder}/gui",
     ],
+    "C_Cpp.autoAddFileAssociations": false,
     "files.associations": {
-        "Doxyfile": "shellscript"
+        "Doxyfile": "shellscript",
     }
 }
