@@ -20,7 +20,7 @@ namespace tomtom
     namespace platforms
     {
 
-        WindowsUSBImpl::WindowsUSBImpl(const DeviceInfo &info)
+        WindowsUSBImpl::WindowsUSBImpl(const USBDeviceInfo &info)
             : device_info(info),
               device_handle(INVALID_HANDLE_VALUE),
               usb_handle(nullptr),
@@ -33,9 +33,9 @@ namespace tomtom
             close();
         }
 
-        std::vector<DeviceInfo> WindowsUSBImpl::enumerateDevices()
+        std::vector<USBDeviceInfo> WindowsUSBImpl::enumerateDevices()
         {
-            std::vector<DeviceInfo> devices;
+            std::vector<USBDeviceInfo> devices;
 
             // Get HID GUID
             GUID hidGuid;
@@ -122,7 +122,7 @@ namespace tomtom
                             // Check if this is a TomTom device
                             if (attributes.VendorID == TOMTOM_VENDOR_ID)
                             {
-                                DeviceInfo info;
+                                USBDeviceInfo info;
                                 info.vendor_id = attributes.VendorID;
                                 info.product_id = attributes.ProductID;
                                 info.device_path = std::string(deviceInterfaceDetailData->DevicePath);

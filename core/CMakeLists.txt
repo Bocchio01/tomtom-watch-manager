@@ -23,6 +23,8 @@ add_library(core STATIC
     src/connection/usb_connection.cpp
 )
 
+add_library(TomTomWatch::core ALIAS core)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -67,8 +69,6 @@ target_include_directories(core
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 set_target_properties(core PROPERTIES

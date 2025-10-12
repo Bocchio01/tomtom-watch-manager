@@ -19,10 +19,10 @@ namespace tomtom
             bool is_open = false;
 
         public:
-            DeviceInfo device_info;
+            USBDeviceInfo device_info;
 
         public:
-            explicit LinuxUSBImpl(const DeviceInfo &info);
+            explicit LinuxUSBImpl(const USBDeviceInfo &info);
             ~LinuxUSBImpl();
 
             bool open();
@@ -32,7 +32,7 @@ namespace tomtom
             int write(const uint8_t *buffer, size_t size, int timeout_ms);
             std::string getDevicePath() const { return device_info.device_path; }
 
-            static std::vector<DeviceInfo> enumerateDevices();
+            static std::vector<USBDeviceInfo> enumerateDevices();
         };
 
     } // namespace platform

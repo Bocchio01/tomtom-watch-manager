@@ -6,31 +6,33 @@ int main()
 {
     spdlog::set_level(spdlog::level::info);
 
-    auto watches = tomtom::Manager::enumerate();
+    tomtom::Manager manager;
 
-    for (auto &watch : watches)
+    auto watch = manager.connectToWatch();
+    if (!watch)
     {
-        watch->connection->open();
-        if (watch->connection->isOpen())
+        spdlog::error("No watch connected.\n");
+        return 1;
+    }
+
+    try
+    {
+        std::time_t current_time;
+        tomtom::WatchError err = watch->getCurrentTime(current_time);
+        if (err != tomtom::WatchError::NoError)
         {
-            std::time_t current_time;
-            tomtom::WatchError err = watch->getCurrentTime(current_time);
-            if (err != tomtom::WatchError::NoError)
-            {
-                spdlog::error("Error getting current time: {}", static_cast<int>(err));
-                continue;
-            }
-            char buf[80];
-            struct tm *timeinfo = localtime(&current_time);
-            strftime(buf, sizeof(buf), "%A, %B %d, %Y %H:%M:%S", timeinfo);
-            spdlog::info("Current watch time: {}", buf);
-            watch->connection->close();
+            spdlog::error("Error getting current time: {}", static_cast<int>(err));
         }
-        else
-        {
-            spdlog::critical("Failed to open watch.\n");
-            return 1;
-        }
+        char buf[80];
+        struct tm *timeinfo = localtime(&current_time);
+        strftime(buf, sizeof(buf), "%A, %B %d, %Y %H:%M:%S", timeinfo);
+        spdlog::info("Current watch time: {}", buf);
+        watch->connection->close();
+    }
+    catch (const std::exception &e)
+    {
+        spdlog::critical(e.what());
+        return 1;
     }
 
     return 0;

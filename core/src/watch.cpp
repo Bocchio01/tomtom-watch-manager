@@ -26,8 +26,6 @@ namespace tomtom
         info.product_name = devInfo.product_name;
 
         spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})", info.product_name, info.product_id, info.serial_number);
-
-        // startUp();
     }
 
     Watch::~Watch()

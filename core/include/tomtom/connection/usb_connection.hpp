@@ -8,7 +8,7 @@ namespace tomtom
     /**
      * @brief Device information structure.
      */
-    struct DeviceInfo
+    struct USBDeviceInfo
     {
         uint16_t vendor_id;
         uint16_t product_id;
@@ -34,7 +34,7 @@ namespace tomtom
          * @brief Constructs a USB connection for the given device.
          * @param device_info Information about the device to connect to.
          */
-        explicit USBConnection(const DeviceInfo &device_info);
+        explicit USBConnection(const USBDeviceInfo &device_info);
 
         ~USBConnection();
 
@@ -56,13 +56,13 @@ namespace tomtom
          * @brief Enumerates all connected TomTom devices.
          * @return Vector of device information structures.
          */
-        static std::vector<DeviceInfo> enumerateDevices();
+        static std::vector<USBDeviceInfo> enumerateDevices();
 
         /**
          * @brief Gets the device information for this connection.
          * @return Reference to the DeviceInfo structure.
          */
-        const DeviceInfo &getDeviceInfo() const;
+        const USBDeviceInfo &getDeviceInfo() const;
     };
 
 } // namespace tomtom

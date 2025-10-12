@@ -31,12 +31,12 @@ namespace tomtom
             WINUSB_INTERFACE_HANDLE usb_handle = nullptr;
             HidCaps capabilities;
             bool is_open = false;
-            DeviceInfo device_info;
+            USBDeviceInfo device_info;
             uint8_t write_endpoint;
             uint8_t read_endpoint;
 
         public:
-            explicit WindowsUSBImpl(const DeviceInfo &info);
+            explicit WindowsUSBImpl(const USBDeviceInfo &info);
             ~WindowsUSBImpl();
 
             bool open();
@@ -45,8 +45,8 @@ namespace tomtom
             int read(uint8_t *buffer, size_t size, int timeout_ms);
             int write(const uint8_t *buffer, size_t size, int timeout_ms);
 
-            static std::vector<DeviceInfo> enumerateDevices();
-            const DeviceInfo &getDeviceInfo() const { return device_info; }
+            static std::vector<USBDeviceInfo> enumerateDevices();
+            const USBDeviceInfo &getDeviceInfo() const { return device_info; }
         };
 
     } // namespace platform

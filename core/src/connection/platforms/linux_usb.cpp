@@ -8,17 +8,17 @@ namespace tomtom
 {
     namespace platforms
     {
-        LinuxUSBImpl::LinuxUSBImpl(const DeviceInfo &device_info) : device_info(info), is_open(false) {}
+        LinuxUSBImpl::LinuxUSBImpl(const USBDeviceInfo &device_info) : device_info(info), is_open(false) {}
         LinuxUSBImpl::~LinuxUSBImpl()
         {
             // Destructor implementation (if needed)
             close();
         }
 
-        std::vector<DeviceInfo> LinuxUSBImpl::enumerateDevices()
+        std::vector<USBDeviceInfo> LinuxUSBImpl::enumerateDevices()
         {
             // Linux-specific implementation to enumerate USB devices
-            std::vector<DeviceInfo> devices;
+            std::vector<USBDeviceInfo> devices;
             // ... (implementation details)
             return devices;
         }
