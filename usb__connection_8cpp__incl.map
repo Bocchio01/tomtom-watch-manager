@@ -1,0 +1,14 @@
+<map id="usb_connection.cpp" name="usb_connection.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="26,5,177,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,167,72,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,32,66,80,54,118,45,153,40,152,48,116,62,78,90,30"/>
+<area shape="rect" id="Node000003" href="$usb__connection_8hpp.html" title=" " alt="" coords="76,79,252,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="113,29,142,66,138,69,109,33"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="135,121,70,162,67,157,132,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="96,167,173,192"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="159,120,146,154,141,153,154,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="197,167,256,192"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="181,117,211,154,207,157,177,121"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="281,167,343,192"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="201,116,279,158,277,162,198,121"/>
+</map>

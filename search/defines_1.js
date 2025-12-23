@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['msg_5fclose_5ffile_0',['MSG_CLOSE_FILE',['../defines_8hpp.html#a7b5c17fbbd179feab7611e5a9393fccd',1,'defines.hpp']]],
+  ['msg_5fdelete_5ffile_1',['MSG_DELETE_FILE',['../defines_8hpp.html#accf7fecefd0b755ff1f67db551328b6d',1,'defines.hpp']]],
+  ['msg_5ffind_5fclose_2',['MSG_FIND_CLOSE',['../defines_8hpp.html#a2a832bcab2c2c525cc6cc37cf43bbd11',1,'defines.hpp']]],
+  ['msg_5ffind_5ffirst_5ffile_3',['MSG_FIND_FIRST_FILE',['../defines_8hpp.html#a5f7c73c10907afc127b25046d0d6afa9',1,'defines.hpp']]],
+  ['msg_5ffind_5fnext_5ffile_4',['MSG_FIND_NEXT_FILE',['../defines_8hpp.html#af8c3fa036fb31094aa58565e8a054385',1,'defines.hpp']]],
+  ['msg_5fformat_5fwatch_5',['MSG_FORMAT_WATCH',['../defines_8hpp.html#abfd4f187f5ac767f35bf2d4de572c432',1,'defines.hpp']]],
+  ['msg_5fget_5fble_5fversion_6',['MSG_GET_BLE_VERSION',['../defines_8hpp.html#a7d0dcab75dbf409170b72c33963db70c',1,'defines.hpp']]],
+  ['msg_5fget_5fcurrent_5ftime_7',['MSG_GET_CURRENT_TIME',['../defines_8hpp.html#a86bdbb1fc5d0b3c18e43df2c8e4fe4c0',1,'defines.hpp']]],
+  ['msg_5fget_5ffile_5fsize_8',['MSG_GET_FILE_SIZE',['../defines_8hpp.html#a9e31e8ff883a0e48a036cef3defe598b',1,'defines.hpp']]],
+  ['msg_5fget_5ffirmware_5fversion_9',['MSG_GET_FIRMWARE_VERSION',['../defines_8hpp.html#a41d2592d0b94a7261a79009bb462c1d6',1,'defines.hpp']]],
+  ['msg_5fget_5fproduct_5fid_10',['MSG_GET_PRODUCT_ID',['../defines_8hpp.html#aad129dd1763ae69adf1cc6803dfdc4a0',1,'defines.hpp']]],
+  ['msg_5fopen_5ffile_5fread_11',['MSG_OPEN_FILE_READ',['../defines_8hpp.html#a668dc258d96db8c6062d3c710164945c',1,'defines.hpp']]],
+  ['msg_5fopen_5ffile_5fwrite_12',['MSG_OPEN_FILE_WRITE',['../defines_8hpp.html#a8c198a09314495d802b1c388107a6b29',1,'defines.hpp']]],
+  ['msg_5fread_5ffile_5fdata_5frequest_13',['MSG_READ_FILE_DATA_REQUEST',['../defines_8hpp.html#a4997ba8bba82bb6fded8f0c53f30452d',1,'defines.hpp']]],
+  ['msg_5fread_5ffile_5fdata_5fresponse_14',['MSG_READ_FILE_DATA_RESPONSE',['../defines_8hpp.html#a44ab164ba8f420e5575131373805b7c9',1,'defines.hpp']]],
+  ['msg_5freset_5fdevice_15',['MSG_RESET_DEVICE',['../defines_8hpp.html#a573a3c1b84a19b8d36a2a7e9b6227c5b',1,'defines.hpp']]],
+  ['msg_5freset_5fgps_5fprocessor_16',['MSG_RESET_GPS_PROCESSOR',['../defines_8hpp.html#a07aac38bcd8ddf73f738365e3e0441b1',1,'defines.hpp']]],
+  ['msg_5funknown_5f0d_17',['MSG_UNKNOWN_0D',['../defines_8hpp.html#a624edf9f5c4fd2d2d728ced91749241d',1,'defines.hpp']]],
+  ['msg_5funknown_5f1a_18',['MSG_UNKNOWN_1A',['../defines_8hpp.html#ac580f8159b456bcb77ca56cdb3b82400',1,'defines.hpp']]],
+  ['msg_5funknown_5f1f_19',['MSG_UNKNOWN_1F',['../defines_8hpp.html#abc7cb85240ecd47e1180deed72b76410',1,'defines.hpp']]],
+  ['msg_5funknown_5f22_20',['MSG_UNKNOWN_22',['../defines_8hpp.html#a4649b0a382de06ab2b7c53886a35d099',1,'defines.hpp']]],
+  ['msg_5funknown_5f23_21',['MSG_UNKNOWN_23',['../defines_8hpp.html#a8ee48f7213ded21c3cdbf63c246f5d38',1,'defines.hpp']]],
+  ['msg_5fwrite_5ffile_5fdata_22',['MSG_WRITE_FILE_DATA',['../defines_8hpp.html#a4d5c1fd3af857cfc3e8f2579a1560dbe',1,'defines.hpp']]]
+];

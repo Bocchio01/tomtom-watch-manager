@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['_5funk_0',['_unk',['../structTXFindFirstFilePacket.html#a3eee294359f02da0032e912a8cbe7363',1,'TXFindFirstFilePacket::_unk'],['../structRXGetCurrentTimePacket.html#a4d0f75ef73d64ceaa14a3f7f70fe55e6',1,'RXGetCurrentTimePacket::_unk']]],
+  ['_5funk1_1',['_unk1',['../structRXFindFilePacket.html#a260ceea7b2268b7aa0b9b7779aac48e7',1,'RXFindFilePacket::_unk1'],['../structRXFindClosePacket.html#a8f9cb325a9d771035e0ffb8c3c5fc757',1,'RXFindClosePacket::_unk1'],['../structRXFileOperationPacket.html#a7b72147da0035fc0915493d8de897493',1,'RXFileOperationPacket::_unk1'],['../structRXGetFileSizePacket.html#a60c7b7552fd6e5ac67dbfd9c4a81105a',1,'RXGetFileSizePacket::_unk1'],['../structRXWriteFileDataPacket.html#a34cdbba83c9ac3a318765c0df7aed529',1,'RXWriteFileDataPacket::_unk1'],['../structRXFormatWatchPacket.html#a97f39f3624ea9fbd479c1c8ba4a0b597',1,'RXFormatWatchPacket::_unk1']]],
+  ['_5funk2_2',['_unk2',['../structRXFindFilePacket.html#a918596cadfb45d949adc1fb3d56268d4',1,'RXFindFilePacket::_unk2'],['../structRXFileOperationPacket.html#abe6c2f2f73d33d854363347530aabff9',1,'RXFileOperationPacket::_unk2'],['../structRXGetFileSizePacket.html#aa88103ab02363e0ddfa046bf4f2526b6',1,'RXGetFileSizePacket::_unk2'],['../structRXWriteFileDataPacket.html#a7f3a38fe10fcf0ea287ce8260ef04c49',1,'RXWriteFileDataPacket::_unk2']]],
+  ['_5funk3_3',['_unk3',['../structRXGetFileSizePacket.html#abf9ac97ea7f7075410d2244d6f34a752',1,'RXGetFileSizePacket']]]
+];
