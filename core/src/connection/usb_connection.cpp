@@ -1,3 +1,4 @@
+#include <cstdint>
 #include "tomtom/connection/usb_connection.hpp"
 
 #ifdef __linux__

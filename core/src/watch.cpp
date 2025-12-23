@@ -37,8 +37,8 @@ namespace tomtom
     }
 
     Watch::Watch(Watch &&other) noexcept
-        : connection(std::move(other.connection)),
-          info(std::move(other.info))
+        : info(std::move(other.info)),
+          connection(std::move(other.connection))
     {
     }
 
@@ -156,7 +156,7 @@ namespace tomtom
         //     return WatchError::FileOpen;
         // }
 
-        RXGetCurrentTimePacket response = {0};
+        RXGetCurrentTimePacket response{};
 
         // Send packet and get response
         WatchError result = sendPacket(

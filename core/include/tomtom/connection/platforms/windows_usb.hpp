@@ -27,11 +27,11 @@ namespace tomtom
         class WindowsUSBImpl
         {
         private:
+            USBDeviceInfo device_info;
             HANDLE device_handle = INVALID_HANDLE_VALUE;
             WINUSB_INTERFACE_HANDLE usb_handle = nullptr;
-            HidCaps capabilities;
             bool is_open = false;
-            USBDeviceInfo device_info;
+            HidCaps capabilities;
             uint8_t write_endpoint;
             uint8_t read_endpoint;
 
