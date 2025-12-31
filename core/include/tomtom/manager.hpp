@@ -4,7 +4,7 @@
 #include <vector>
 #include <optional>
 #include "tomtom/watch.hpp"
-#include "tomtom/connection/usb_connection.hpp"
+#include "tomtom/connection/device_info.hpp"
 
 namespace tomtom
 {
@@ -81,7 +81,7 @@ namespace tomtom
         bool hasWatches() const;
 
     private:
-        std::vector<USBDeviceInfo> cachedDevices_;
+        std::vector<DeviceInfo> cachedDevices_;
 
         void refreshDeviceCache();
     };

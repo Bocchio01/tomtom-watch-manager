@@ -5,7 +5,7 @@
 #include <memory>
 #include <ctime>
 
-#include "tomtom/connection/usb_connection.hpp"
+#include "tomtom/connection/device_connection.hpp"
 
 namespace tomtom
 {
@@ -48,14 +48,14 @@ namespace tomtom
 
     public:
         WatchInfo info;
-        std::unique_ptr<USBConnection> connection;
+        std::unique_ptr<DeviceConnection> connection;
 
     public:
         /**
          * @brief Constructs a new Watch instance.
-         * @param connection Unique pointer to an established USBConnection.
+         * @param connection Unique pointer to an established DeviceConnection.
          */
-        explicit Watch(std::unique_ptr<USBConnection> connection);
+        explicit Watch(std::unique_ptr<DeviceConnection> connection);
 
         /**
          * @brief Closes the connection to the watch and releases resources.

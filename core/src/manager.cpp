@@ -4,6 +4,7 @@
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
 #include "tomtom/manager.hpp"
+#include "tomtom/connection/device_connection_factory.hpp"
 
 namespace tomtom
 {
@@ -20,7 +21,7 @@ namespace tomtom
     void Manager::refreshDeviceCache()
     {
         spdlog::debug("Refreshing device cache");
-        cachedDevices_ = USBConnection::enumerateDevices();
+        cachedDevices_ = DeviceConnection::enumerate();
         spdlog::info("Found {} TomTom device(s)", cachedDevices_.size());
     }
 
@@ -99,7 +100,7 @@ namespace tomtom
         {
             spdlog::info("Connecting to watch: {} (serial: {})", device.product_id, device.serial_number);
 
-            auto connection = std::make_unique<USBConnection>(device);
+            auto connection = DeviceConnectionFactory::create(device);
             auto watch = std::make_shared<Watch>(std::move(connection));
 
             // Initialize the watch
@@ -129,7 +130,7 @@ namespace tomtom
 
         // Find device with matching serial
         auto it = std::find_if(cachedDevices_.begin(), cachedDevices_.end(),
-                               [&serial](const USBDeviceInfo &device)
+                               [&serial](const DeviceInfo &device)
                                {
                                    return device.serial_number == serial;
                                });
@@ -149,7 +150,7 @@ namespace tomtom
         spdlog::debug("Enumerating all TomTom watches");
 
         std::vector<std::shared_ptr<Watch>> watches;
-        auto devices = USBConnection::enumerateDevices();
+        auto devices = DeviceConnection::enumerate();
 
         spdlog::info("Found {} device(s) to enumerate", devices.size());
 
@@ -162,7 +163,7 @@ namespace tomtom
                 spdlog::debug("Enumerating device {}: product ID 0x{:04X}, serial {}",
                               i, device.product_id, device.serial_number);
 
-                auto connection = std::make_unique<USBConnection>(device);
+                auto connection = DeviceConnectionFactory::create(device);
                 auto watch = std::make_shared<Watch>(std::move(connection));
 
                 // Initialize the watch

@@ -1,13 +1,12 @@
-#include <windows.h>
 #include <spdlog/spdlog.h>
 
 #include "tomtom/defines.hpp"
-#include "tomtom/packets.hpp"
+#include "tomtom/protocol/packets.hpp"
 #include "tomtom/watch.hpp"
 
 namespace tomtom
 {
-    Watch::Watch(std::unique_ptr<USBConnection> conn) : connection(std::move(conn))
+    Watch::Watch(std::unique_ptr<DeviceConnection> conn) : connection(std::move(conn))
     {
         if (!connection)
         {
@@ -19,7 +18,7 @@ namespace tomtom
             throw std::runtime_error("Failed to open connection to the watch");
         }
 
-        const auto &devInfo = connection->getDeviceInfo();
+        const auto &devInfo = connection->deviceInfo();
         info.product_id = devInfo.product_id;
         info.serial_number = devInfo.serial_number;
         info.manufacturer = devInfo.manufacturer;
