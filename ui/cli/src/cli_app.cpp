@@ -141,4 +141,5 @@ namespace tomtom::cli
         return 1;
     }
 
-} // namespace tomtom::cli
+}
+::cli

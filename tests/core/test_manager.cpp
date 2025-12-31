@@ -1,5 +1,6 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
+
 #include "tomtom/manager.hpp"
 
 int main()
@@ -8,31 +9,29 @@ int main()
 
     tomtom::Manager manager;
 
-    auto watch = manager.connectToWatch();
-    if (!watch)
+    auto watches_info = manager.detectWatches();
+
+    if (watches_info.empty())
     {
         spdlog::error("No watch connected.\n");
         return 1;
     }
 
-    try
+    spdlog::info("Detected {} watch(es):", watches_info.size());
+    for (size_t i = 0; i < watches_info.size(); ++i)
     {
-        std::time_t current_time;
-        tomtom::WatchError err = watch->getCurrentTime(current_time);
-        if (err != tomtom::WatchError::NoError)
+        auto watch = manager.connectToWatch(i);
+        if (watch)
         {
-            spdlog::error("Error getting current time: {}", static_cast<int>(err));
+            spdlog::info("Connected to watch {}: {} - {}", i,
+                         watch->getManufacturer(),
+                         watch->getProductName());
         }
-        char buf[80];
-        struct tm *timeinfo = localtime(&current_time);
-        strftime(buf, sizeof(buf), "%A, %B %d, %Y %H:%M:%S", timeinfo);
-        spdlog::info("Current watch time: {}", buf);
-        watch->connection->close();
-    }
-    catch (const std::exception &e)
-    {
-        spdlog::critical(e.what());
-        return 1;
+        else
+        {
+            spdlog::error("Failed to connect to watch {}\n", i);
+            continue;
+        }
     }
 
     return 0;

@@ -31,4 +31,5 @@ namespace tomtom::cli
         Manager &manager_;
     };
 
-} // namespace tomtom::cli
+}
+::cli

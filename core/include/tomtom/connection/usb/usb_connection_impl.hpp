@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <vector>
 #include "../device_info.hpp"
-#include "usb_device_connection.hpp"
+#include "usb_connection.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     /**
      * @brief Private implementation of USBDeviceConnection.

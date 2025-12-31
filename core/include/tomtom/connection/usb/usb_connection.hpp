@@ -2,10 +2,10 @@
 #include <memory>
 #include <vector>
 
-#include "../device_connection.hpp"
+#include "../connection.hpp"
 #include "../device_info.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     /**
      * @brief USB transport implementation.

@@ -5,7 +5,9 @@
 #include <memory>
 #include <ctime>
 
-#include "tomtom/connection/device_connection.hpp"
+#include "tomtom/connection/connection.hpp"
+
+using namespace tomtom::connection;
 
 namespace tomtom
 {
@@ -48,14 +50,14 @@ namespace tomtom
 
     public:
         WatchInfo info;
-        std::unique_ptr<DeviceConnection> connection;
+        std::shared_ptr<DeviceConnection> connection;
 
     public:
         /**
          * @brief Constructs a new Watch instance.
          * @param connection Unique pointer to an established DeviceConnection.
          */
-        explicit Watch(std::unique_ptr<DeviceConnection> connection);
+        explicit Watch(std::shared_ptr<DeviceConnection> connection);
 
         /**
          * @brief Closes the connection to the watch and releases resources.
@@ -73,15 +75,6 @@ namespace tomtom
         std::string getSerialNumber() const { return info.serial_number; }
         std::string getManufacturer() const { return info.manufacturer; }
         std::string getProductName() const { return info.product_name; }
-        WatchError getCurrentTime(std::time_t &time);
-
-        WatchError startUp();
-        WatchError sendPacket(
-            uint8_t msg,
-            uint8_t tx_length,
-            const uint8_t *tx_data,
-            uint8_t rx_length,
-            uint8_t *rx_data);
     };
 
 }

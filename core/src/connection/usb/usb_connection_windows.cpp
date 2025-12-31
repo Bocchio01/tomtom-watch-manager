@@ -15,10 +15,10 @@ extern "C"
 #include <spdlog/spdlog.h>
 
 #include "tomtom/defines.hpp"
-#include "tomtom/connection/usb/usb_device_connection.hpp"
-#include "tomtom/connection/usb/usb_device_connection_impl.hpp"
+#include "tomtom/connection/usb/usb_connection.hpp"
+#include "tomtom/connection/usb/usb_connection_impl.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     USBDeviceConnection::Impl::Impl(const DeviceInfo &info)
         : device_info_(info),
@@ -309,4 +309,4 @@ namespace tomtom
         return devices;
     }
 
-} // namespace tomtom
+}

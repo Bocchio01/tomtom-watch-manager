@@ -24,4 +24,5 @@ namespace tomtom::cli
         std::unique_ptr<Manager> manager_;
     };
 
-} // namespace tomtom::cli
+}
+::cli

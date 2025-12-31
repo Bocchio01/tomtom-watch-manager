@@ -1,11 +1,12 @@
 #pragma once
+
 #include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "device_info.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     /**
      * @brief Abstract transport connection.

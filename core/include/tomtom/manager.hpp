@@ -23,7 +23,7 @@ namespace tomtom
         /**
          * @brief Detects all connected TomTom watches.
          *
-         * Scans USB devices and returns information about all connected TomTom watches
+         * Scans devices and returns information about all connected TomTom watches
          * without establishing full connections.
          *
          * @return A vector of WatchInfo structures containing basic information about each watch.
@@ -57,16 +57,6 @@ namespace tomtom
         std::shared_ptr<Watch> connectToWatch(const std::string &serial);
 
         /**
-         * @brief Enumerates all connected TomTom watches with full initialization.
-         *
-         * Creates Watch instances for all connected devices. This establishes
-         * full connections and initializes each watch.
-         *
-         * @return A vector of shared pointers to Watch instances.
-         */
-        static std::vector<std::shared_ptr<Watch>> enumerate();
-
-        /**
          * @brief Gets the number of connected watches.
          *
          * @return The number of TomTom watches currently connected.
@@ -86,4 +76,4 @@ namespace tomtom
         void refreshDeviceCache();
     };
 
-} // namespace tomtom
+}

@@ -217,4 +217,5 @@ namespace tomtom::cli
         std::cerr << std::endl;
     }
 
-} // namespace tomtom::cli
+}
+::cli

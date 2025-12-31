@@ -4,7 +4,7 @@
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
 #include "tomtom/manager.hpp"
-#include "tomtom/connection/device_connection_factory.hpp"
+#include "tomtom/connection/connection_factory.hpp"
 
 namespace tomtom
 {
@@ -16,13 +16,6 @@ namespace tomtom
     Manager::~Manager()
     {
         spdlog::debug("Manager destroyed");
-    }
-
-    void Manager::refreshDeviceCache()
-    {
-        spdlog::debug("Refreshing device cache");
-        cachedDevices_ = DeviceConnection::enumerate();
-        spdlog::info("Found {} TomTom device(s)", cachedDevices_.size());
     }
 
     std::vector<WatchInfo> Manager::detectWatches()
@@ -103,14 +96,14 @@ namespace tomtom
             auto connection = DeviceConnectionFactory::create(device);
             auto watch = std::make_shared<Watch>(std::move(connection));
 
+            // TODO: Startup sequence
             // Initialize the watch
-            auto error = watch->startUp();
-            if (error != WatchError::NoError)
-            {
-                spdlog::error("Failed to initialize watch: error code {}",
-                              static_cast<int>(error));
-                return nullptr;
-            }
+            // auto error = watch->startUp();
+            // if (error != WatchError::NoError)
+            // {
+            //     spdlog::error("Failed to initialize watch: error code {}", static_cast<int>(error));
+            //     return nullptr;
+            // }
 
             spdlog::info("Successfully connected to watch");
             return watch;
@@ -145,49 +138,6 @@ namespace tomtom
         return connectToWatch(index);
     }
 
-    std::vector<std::shared_ptr<Watch>> Manager::enumerate()
-    {
-        spdlog::debug("Enumerating all TomTom watches");
-
-        std::vector<std::shared_ptr<Watch>> watches;
-        auto devices = DeviceConnection::enumerate();
-
-        spdlog::info("Found {} device(s) to enumerate", devices.size());
-
-        for (size_t i = 0; i < devices.size(); ++i)
-        {
-            const auto &device = devices[i];
-
-            try
-            {
-                spdlog::debug("Enumerating device {}: product ID 0x{:04X}, serial {}",
-                              i, device.product_id, device.serial_number);
-
-                auto connection = DeviceConnectionFactory::create(device);
-                auto watch = std::make_shared<Watch>(std::move(connection));
-
-                // Initialize the watch
-                auto error = watch->startUp();
-                if (error != WatchError::NoError)
-                {
-                    spdlog::warn("Failed to initialize watch {}: error code {}",
-                                 i, static_cast<int>(error));
-                    continue;
-                }
-
-                watches.push_back(watch);
-            }
-            catch (const std::exception &e)
-            {
-                spdlog::warn("Failed to enumerate device {}: {}", i, e.what());
-                continue;
-            }
-        }
-
-        spdlog::info("Successfully enumerated {} watch(es)", watches.size());
-        return watches;
-    }
-
     size_t Manager::getWatchCount() const
     {
         return cachedDevices_.size();
@@ -198,4 +148,11 @@ namespace tomtom
         return !cachedDevices_.empty();
     }
 
-} // namespace tomtom
+    void Manager::refreshDeviceCache()
+    {
+        spdlog::debug("Refreshing device cache");
+        cachedDevices_ = DeviceConnection::enumerate();
+        spdlog::info("Found {} TomTom device(s)", cachedDevices_.size());
+    }
+
+}

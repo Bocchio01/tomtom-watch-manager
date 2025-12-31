@@ -2,9 +2,9 @@
 
 #include <memory>
 #include "device_info.hpp"
-#include "device_connection.hpp"
+#include "connection.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     class DeviceConnectionFactory
     {

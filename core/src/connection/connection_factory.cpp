@@ -1,9 +1,9 @@
-#include "tomtom/connection/device_connection_factory.hpp"
+#include "tomtom/connection/connection_factory.hpp"
 
-#include "tomtom/connection/usb/usb_device_connection.hpp"
-// #include "tomtom/connection/ble/ble_device_connection.hpp"
+#include "tomtom/connection/usb/usb_connection.hpp"
+// #include "tomtom/connection/ble/ble_connection.hpp"
 
-namespace tomtom
+namespace tomtom::connection
 {
     std::unique_ptr<DeviceConnection> DeviceConnectionFactory::create(const DeviceInfo &info)
     {

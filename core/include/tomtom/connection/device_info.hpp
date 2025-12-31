@@ -1,9 +1,10 @@
 #pragma once
+
 #include <string>
 #include <cstdint>
 #include <variant>
 
-namespace tomtom
+namespace tomtom::connection
 {
     /**
      * @brief Transport type enumeration.
