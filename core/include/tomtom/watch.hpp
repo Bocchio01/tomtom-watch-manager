@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "tomtom/transport/connection.hpp"
+#include "tomtom/protocol/definition/protocol.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"
 #include "tomtom/defines.hpp"
 
@@ -57,6 +58,15 @@ namespace tomtom
          * @return std::time_t The watch time.
          */
         std::time_t getTime();
+
+        /**
+         * @brief Get firmaware version string from the watch.
+         * @return std::string Firmware version.
+         */
+        std::string getFirmwareVersion();
+
+        void listFiles();
+        void readFile(protocol::definition::FileId file_id);
     };
 
 }

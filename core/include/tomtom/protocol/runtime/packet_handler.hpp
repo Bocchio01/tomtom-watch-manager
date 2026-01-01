@@ -9,18 +9,72 @@
 
 #include "tomtom/transport/connection.hpp"
 #include "tomtom/protocol/definition/packet.hpp"
+#include "tomtom/protocol/definition/packet_header.hpp"
 #include "tomtom/protocol/runtime/packet_validation.hpp"
 #include "tomtom/protocol/runtime/transaction_exceptions.hpp"
 
 namespace tomtom::protocol::runtime
 {
     /**
+     * @brief Simple view over a contiguous range of bytes (C++17 compatible).
+     */
+    struct ByteView
+    {
+        const uint8_t *data_ptr;
+        size_t data_size;
+
+        const uint8_t *begin() const { return data_ptr; }
+        const uint8_t *end() const { return data_ptr + data_size; }
+        size_t size() const { return data_size; }
+        bool empty() const { return data_size == 0; }
+    };
+
+    /**
+     * @brief Holds a parsed packet along with the raw payload bytes.
+     *
+     * This is necessary for variable-length payloads where the structured
+     * payload type only contains fixed fields (metadata) and the actual
+     * data follows in the raw bytes.
+     */
+    template <typename PacketType>
+    struct PacketResponse
+    {
+        PacketType packet;
+        std::vector<uint8_t> raw_payload_bytes;
+
+        /**
+         * @brief Get a view over the variable data portion.
+         *
+         * @tparam PayloadType The structured payload type.
+         * @return View over bytes following the structured payload.
+         */
+        template <typename PayloadType = typename PacketType::payload_type>
+        ByteView variable_data() const
+        {
+            if (raw_payload_bytes.size() < sizeof(PayloadType))
+            {
+                return ByteView{nullptr, 0};
+            }
+            return ByteView{
+                raw_payload_bytes.data() + sizeof(PayloadType),
+                raw_payload_bytes.size() - sizeof(PayloadType)};
+        }
+    };
+
+    /**
      * @brief Handles serialization and transport of packets over a connection.
      */
     class PacketHandler
     {
     public:
-        explicit PacketHandler(std::shared_ptr<transport::DeviceConnection> connection);
+        explicit PacketHandler(std::shared_ptr<transport::DeviceConnection> connection) : connection_(std::move(connection))
+        {
+            if (!connection_)
+            {
+                throw std::invalid_argument("PacketHandler requires a valid connection");
+            }
+        }
+
         ~PacketHandler() = default;
 
         /**
@@ -32,87 +86,53 @@ namespace tomtom::protocol::runtime
         template <typename TxPacket>
         void send(const TxPacket &packet)
         {
-            // Serialize
-            const uint8_t *data = reinterpret_cast<const uint8_t *>(&packet);
-            size_t size = packet.size();
+            TxPacket tx_copy = packet;
+            tx_copy.header.counter = current_counter_++;
+            const uint8_t *data = reinterpret_cast<const uint8_t *>(&tx_copy);
+            size_t size = tx_copy.size();
 
-            writeBytes(data, size);
+            int result = connection_->write(data, size, 2000); // 2 second timeout
+            if (result < 0)
+            {
+                throw ConnectionError("Failed to write to device (IO Error)");
+            }
         }
 
         /**
          * @brief Receives a specific packet type from the device.
          *
          * @tparam RxPacket The expected return packet type (Packet<T>).
-         * @return The deserialized packet.
+         * @return PacketResponse containing the deserialized packet and raw payload bytes.
          */
         template <typename RxPacket>
-        RxPacket receive()
+        PacketResponse<RxPacket> receive()
         {
-            // 1. Read the first 2 bytes (Direction + Length)
-            // Header structure: [Direction(1)][Length(1)][Counter(1)][Type(1)]
+            PacketResponse<RxPacket> response;
 
-            uint8_t prefix[2];
-            readBytes(prefix, 2);
+            // Read the header first
+            std::vector<uint8_t> header_bytes(sizeof(definition::PacketHeader));
+            connection_->read(header_bytes.data(), header_bytes.size(), 2000);
+            printBytesAsHex(header_bytes.data(), header_bytes.size());
 
-            auto direction = static_cast<definition::PacketDirection>(prefix[0]);
-            uint8_t remaining_len = prefix[1];
+            // Read the payload based on length in header
+            std::vector<uint8_t> payload_bytes(header_bytes[1] - 2); // Subtract counter(1) + type(1)
+            connection_->read(payload_bytes.data(), payload_bytes.size(), 2000);
+            printBytesAsHex(payload_bytes.data(), payload_bytes.size());
 
-            // 2. Basic Validation
-            if (direction != definition::PacketDirection::RX)
-            {
-                throw MalformedPacketError("Received packet with non-RX direction");
-            }
+            // Construct the packet header
+            std::memcpy(&response.packet.header, header_bytes.data(), header_bytes.size());
 
-            // 3. Read the rest of the packet based on Length field
-            // The length field includes Counter + Type + Payload
-            std::vector<uint8_t> buffer(2 + remaining_len);
-            buffer[0] = prefix[0];
-            buffer[1] = prefix[1];
+            // Copy structured payload (only up to sizeof(payload))
+            size_t copy_size = std::min(payload_bytes.size(), sizeof(response.packet.payload));
+            std::memcpy(&response.packet.payload, payload_bytes.data(), copy_size);
 
-            spdlog::debug("Receiving packet: direction=0x{:02X}, length={}", static_cast<uint8_t>(direction), remaining_len);
+            // Store raw payload bytes for variable-length access
+            response.raw_payload_bytes = std::move(payload_bytes);
 
-            if (remaining_len > 0)
-            {
-                readBytes(buffer.data() + 2, remaining_len);
-            }
+            // Clear any remaining data in the connection buffer
+            connection_->read(nullptr, 0, 0);
 
-            // Format bytes as hex string (space separated)
-            std::ostringstream oss;
-            oss << std::hex << std::uppercase << std::setfill('0');
-            for (size_t i = 0; i < buffer.size(); ++i)
-            {
-                oss << std::setw(2) << static_cast<int>(buffer[i]);
-                if (i + 1 < buffer.size())
-                    oss << ' ';
-            }
-            spdlog::debug("Received {} bytes: {}", buffer.size(), oss.str());
-
-            // 4. Cast to Packet Structure (Zero-Copy-ish)
-            // Safety check: verify buffer size matches expected struct size
-            // For variable length packets, RxPacket::size() might differ from buffer.size()
-            // This implementation assumes Fixed Size responses for simple commands.
-            if (buffer.size() < sizeof(RxPacket))
-            {
-                // This might happen if the device sends less data than the struct defines
-                spdlog::warn("Received packet size {} is smaller than struct size {}",
-                             buffer.size(), sizeof(RxPacket));
-            }
-
-            RxPacket packet;
-            // Use memcpy to avoid strict aliasing violations or alignment issues
-            std::memcpy(&packet, buffer.data(), std::min(buffer.size(), sizeof(RxPacket)));
-
-            // 5. Type Validation
-            // Get traits from the payload type of the requested RxPacket
-            using PayloadType = decltype(packet.payload);
-            using Traits = definition::PayloadTraits<PayloadType>;
-
-            if (packet.header.type != Traits::type)
-            {
-                throw UnexpectedPacketError(Traits::type, packet.header.type);
-            }
-
-            return packet;
+            return response;
         }
 
         /**
@@ -121,21 +141,41 @@ namespace tomtom::protocol::runtime
          * @tparam TxPacket Type of the command packet.
          * @tparam RxPacket Type of the expected response packet.
          * @param tx The command packet to send.
-         * @return RxPacket The response received.
+         * @return PacketResponse<RxPacket> The response with raw payload bytes.
          */
         template <typename TxPacket, typename RxPacket>
-        RxPacket transaction(const TxPacket &tx)
+        PacketResponse<RxPacket> transaction(const TxPacket &tx)
         {
             send(tx);
-            return receive<RxPacket>();
+            auto rx = receive<RxPacket>();
+
+            // Validate that the response corresponds to the request if needed
+            using PayloadType = decltype(rx.packet.payload);
+            using Traits = definition::PayloadTraits<PayloadType>;
+
+            if (rx.packet.header.type != Traits::type)
+            {
+                throw UnexpectedPacketError(Traits::type, rx.packet.header.type);
+            }
+
+            return rx;
         }
 
     private:
         std::shared_ptr<transport::DeviceConnection> connection_;
         uint8_t current_counter_ = 0;
 
-        // Helper methods implemented in .cpp
-        void writeBytes(const uint8_t *data, size_t size);
-        void readBytes(uint8_t *buffer, size_t size);
+        void printBytesAsHex(const uint8_t *data, size_t size)
+        {
+            std::ostringstream oss;
+            oss << std::hex << std::uppercase << std::setfill('0');
+            for (size_t i = 0; i < size; ++i)
+            {
+                oss << std::setw(2) << static_cast<int>(data[i]);
+                if (i + 1 < size)
+                    oss << ' ';
+            }
+            spdlog::debug("Data ({} bytes): {}", size, oss.str());
+        }
     };
 }

@@ -14,13 +14,29 @@ int tests_failed = 0;
 // =============================================================================
 // Manager Tests (Require Hardware)
 // =============================================================================
+Manager manager;
+auto watch = manager.connectToWatch();
 
 TEST(test_get_time)
 {
-    Manager manager;
-    auto watch = manager.connectToWatch();
+    watch->getTime();
+}
 
-    auto time = watch->getTime();
+TEST(test_get_firmware_version)
+{
+    watch->getFirmwareVersion();
+}
+
+TEST(test_list_files)
+{
+    watch->listFiles();
+}
+
+TEST(test_read_files)
+{
+    // Example FileId, replace with a valid one for actual testing
+    protocol::definition::FileId test_file_id(0x00F20000);
+    watch->readFile(test_file_id);
 }
 
 // =============================================================================
@@ -29,14 +45,17 @@ TEST(test_get_time)
 
 int main()
 {
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::info);
     spdlog::info("=================================================");
     spdlog::info("Running Manager Integration Tests");
     spdlog::info("Note: These tests require a connected watch");
     spdlog::info("=================================================");
 
     // Run tests
-    RUN_TEST(test_get_time);
+    // RUN_TEST(test_get_time);
+    // RUN_TEST(test_get_firmware_version);
+    // RUN_TEST(test_list_files);
+    RUN_TEST(test_read_files);
 
     // Print results
     spdlog::info("=================================================");

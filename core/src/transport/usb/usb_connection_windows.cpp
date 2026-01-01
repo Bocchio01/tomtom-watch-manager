@@ -116,6 +116,7 @@ namespace tomtom::transport
 
         if (!is_open_ || device_handle_ == INVALID_HANDLE_VALUE || buffer == nullptr || size == 0)
         {
+            cached_report_.clear();
             return -1;
         }
 

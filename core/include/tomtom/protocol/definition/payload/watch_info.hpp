@@ -35,6 +35,10 @@ namespace tomtom::protocol::definition
     struct GetWatchTimeRxPayload
     {
         uint32_t time;
+        uint32_t reserved_1;
+        uint32_t reserved_2;
+        uint32_t reserved_3;
+        uint32_t reserved_4;
     };
 
     template <>

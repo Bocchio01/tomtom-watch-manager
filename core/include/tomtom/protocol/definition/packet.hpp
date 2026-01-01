@@ -14,6 +14,9 @@ namespace tomtom::protocol::definition
     template <typename PacketPayload>
     struct Packet
     {
+        using header_type = PacketHeader;
+        using payload_type = PacketPayload;
+
         PacketHeader header;
         PacketPayload payload;
 
