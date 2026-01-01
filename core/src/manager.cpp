@@ -18,18 +18,18 @@ namespace tomtom
         spdlog::debug("Manager destroyed");
     }
 
-    std::vector<DeviceInfo> Manager::detectWatches()
+    std::vector<connection::DeviceInfo> Manager::detectWatches()
     {
         spdlog::debug("Detecting TomTom watches");
 
         refreshDeviceCache();
 
-        std::vector<DeviceInfo> watches;
+        std::vector<connection::DeviceInfo> watches;
         watches.reserve(cachedDevices_.size());
 
         for (const auto &device : cachedDevices_)
         {
-            DeviceInfo info;
+            connection::DeviceInfo info;
             info.product_id = device.product_id;
             info.serial_number = device.serial_number;
 
@@ -93,7 +93,7 @@ namespace tomtom
         {
             spdlog::info("Connecting to watch: {} (serial: {})", static_cast<uint16_t>(device.product_id), device.serial_number);
 
-            auto connection = DeviceConnectionFactory::create(device);
+            auto connection = connection::DeviceConnectionFactory::create(device);
             auto watch = std::make_shared<Watch>(std::move(connection));
 
             // TODO: Startup sequence
@@ -123,7 +123,7 @@ namespace tomtom
 
         // Find device with matching serial
         auto it = std::find_if(cachedDevices_.begin(), cachedDevices_.end(),
-                               [&serial](const DeviceInfo &device)
+                               [&serial](const connection::DeviceInfo &device)
                                {
                                    return device.serial_number == serial;
                                });
@@ -151,7 +151,7 @@ namespace tomtom
     void Manager::refreshDeviceCache()
     {
         spdlog::debug("Refreshing device cache");
-        cachedDevices_ = DeviceConnection::enumerate();
+        cachedDevices_ = connection::DeviceConnection::enumerate();
         spdlog::info("Found {} TomTom device(s)", cachedDevices_.size());
     }
 

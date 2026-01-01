@@ -17,7 +17,7 @@
  * @code
  * #include "protocol.hpp"
  *
- * using namespace tomtom::protocol;
+ * using namespace tomtom::interface::protocol;
  *
  * // Create a packet to read a file
  * OpenFileReadTx packet;
@@ -42,7 +42,7 @@
 #include "payload/watch_info.hpp"
 #include "payload/watch_control.hpp"
 
-namespace tomtom::protocol
+namespace tomtom::interface::protocol
 {
     // ============================================================================
     // File Operation Packets (TX)
@@ -128,7 +128,7 @@ namespace tomtom::protocol
 }
 
 /**
- * @namespace tomtom::protocol
+ * @namespace tomtom::interface::protocol
  * @brief TomTom watch communication protocol
  *
  * This namespace contains all types and structures for implementing

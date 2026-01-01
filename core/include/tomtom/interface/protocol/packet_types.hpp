@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <array>
 
-namespace tomtom::protocol
+namespace tomtom::interface::protocol
 {
     /**
      * @brief Direction of packets communication

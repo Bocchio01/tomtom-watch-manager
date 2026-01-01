@@ -20,8 +20,8 @@ extern "C"
 
 namespace tomtom::connection
 {
-    USBDeviceConnection::Impl::Impl(const DeviceInfo &device_info)
-        : device_info_(device_info),
+    USBDeviceConnection::Impl::Impl(const DeviceInfo &info)
+        : device_info_(info),
           is_open_(false),
           device_handle_(INVALID_HANDLE_VALUE),
           input_report_len_(0),
@@ -266,39 +266,39 @@ namespace tomtom::connection
                         // Check if this is a TomTom device
                         if (attributes.VendorID == static_cast<uint16_t>(VendorID::TOMTOM))
                         {
-                            DeviceInfo device_info;
-                            device_info.vendor_id = static_cast<VendorID>(attributes.VendorID);
-                            device_info.product_id = static_cast<ProductID>(attributes.ProductID);
-                            device_info.transport = TransportType::USB;
+                            DeviceInfo info;
+                            info.vendor_id = static_cast<VendorID>(attributes.VendorID);
+                            info.product_id = static_cast<ProductID>(attributes.ProductID);
+                            info.transport = TransportType::USB;
 
                             // Set USB-specific details
                             USBDeviceDetails usb_details;
                             usb_details.device_path = std::string(deviceInterfaceDetailData->DevicePath);
-                            device_info.details = usb_details;
+                            info.details = usb_details;
 
                             wchar_t buffer[256] = {0};
                             if (HidD_GetManufacturerString(hDevice, buffer, sizeof(buffer)))
                             {
                                 std::wstring wStr(buffer);
-                                device_info.manufacturer = std::string(wStr.begin(), wStr.end());
+                                info.manufacturer = std::string(wStr.begin(), wStr.end());
                             }
 
                             if (HidD_GetProductString(hDevice, buffer, sizeof(buffer)))
                             {
                                 std::wstring wStr(buffer);
-                                device_info.product_name = std::string(wStr.begin(), wStr.end());
+                                info.product_name = std::string(wStr.begin(), wStr.end());
                             }
 
                             if (HidD_GetSerialNumberString(hDevice, buffer, sizeof(buffer)))
                             {
                                 std::wstring wStr(buffer);
-                                device_info.serial_number = std::string(wStr.begin(), wStr.end());
+                                info.serial_number = std::string(wStr.begin(), wStr.end());
                             }
 
-                            devices.push_back(device_info);
+                            devices.push_back(info);
                             spdlog::debug("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Path={}",
-                                          static_cast<uint16_t>(device_info.vendor_id),
-                                          static_cast<uint16_t>(device_info.product_id),
+                                          static_cast<uint16_t>(info.vendor_id),
+                                          static_cast<uint16_t>(info.product_id),
                                           usb_details.device_path);
                         }
                     }

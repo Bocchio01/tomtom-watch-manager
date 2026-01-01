@@ -3,7 +3,7 @@
 
 #pragma pack(push, 1)
 
-namespace tomtom::protocol
+namespace tomtom::interface::protocol
 {
 
     /**

@@ -28,7 +28,7 @@ namespace tomtom
          *
          * @return A vector of DeviceInfo structures containing basic information about each watch.
          */
-        std::vector<DeviceInfo> detectWatches();
+        std::vector<connection::DeviceInfo> detectWatches();
 
         /**
          * @brief Connects to the first available TomTom watch.
@@ -71,7 +71,7 @@ namespace tomtom
         bool hasWatches() const;
 
     private:
-        std::vector<DeviceInfo> cachedDevices_;
+        std::vector<connection::DeviceInfo> cachedDevices_;
 
         void refreshDeviceCache();
     };

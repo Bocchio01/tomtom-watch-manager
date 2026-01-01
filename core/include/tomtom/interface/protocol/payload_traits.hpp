@@ -2,7 +2,7 @@
 
 #include "packet_types.hpp"
 
-namespace tomtom::protocol
+namespace tomtom::interface::protocol
 {
     /**
      * @brief Traits struct to bind metadata to payload types.

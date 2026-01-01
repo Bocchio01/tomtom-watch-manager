@@ -20,7 +20,7 @@ TEST(test_get_time)
     Manager manager;
     auto watch = manager.connectToWatch();
 
-    watch->printTime();
+    auto time = watch->getTime();
 }
 
 // =============================================================================
@@ -29,7 +29,7 @@ TEST(test_get_time)
 
 int main()
 {
-    spdlog::set_level(spdlog::level::info);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::info("=================================================");
     spdlog::info("Running Manager Integration Tests");
     spdlog::info("Note: These tests require a connected watch");

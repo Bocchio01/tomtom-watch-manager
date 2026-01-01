@@ -2,10 +2,10 @@
 #include <cstring>
 #include <spdlog/spdlog.h>
 
-#include "tomtom/interface/interface.hpp"
+#include "tomtom/interface/protocol/protocol.hpp"
 #include "../test_utils.hpp"
 
-using namespace tomtom::interface;
+using namespace tomtom::interface::protocol;
 
 // Test counter
 int tests_passed = 0;
@@ -32,9 +32,9 @@ TEST(test_message_type_enum)
 
 TEST(test_interface_error_enum)
 {
-    ASSERT_EQ(static_cast<uint32_t>(0x00000000), static_cast<uint32_t>(InterfaceError::SUCCESS), "SUCCESS should be 0x00000000");
-    ASSERT_EQ(static_cast<uint32_t>(0x00000001), static_cast<uint32_t>(InterfaceError::UNKNOWN_ERROR), "UNKNOWN_ERROR should be 0x00000001");
-    ASSERT_EQ(static_cast<uint32_t>(0x00000002), static_cast<uint32_t>(InterfaceError::FILE_NOT_FOUND), "FILE_NOT_FOUND should be 0x00000002");
+    ASSERT_EQ(static_cast<uint32_t>(0x00000000), static_cast<uint32_t>(ProtocolError::SUCCESS), "SUCCESS should be 0x00000000");
+    ASSERT_EQ(static_cast<uint32_t>(0x00000001), static_cast<uint32_t>(ProtocolError::UNKNOWN_ERROR), "UNKNOWN_ERROR should be 0x00000001");
+    ASSERT_EQ(static_cast<uint32_t>(0x00000002), static_cast<uint32_t>(ProtocolError::FILE_NOT_FOUND), "FILE_NOT_FOUND should be 0x00000002");
 }
 
 TEST(test_file_id_struct)
@@ -179,10 +179,10 @@ TEST(test_file_operation_response_usage)
 {
     OpenFileReadRx response_packet;
     response_packet.payload.file_id = FileId(0x12345678);
-    response_packet.payload.error = static_cast<uint32_t>(InterfaceError::SUCCESS);
+    response_packet.payload.error = static_cast<uint32_t>(ProtocolError::SUCCESS);
 
     ASSERT_EQ(0x12345678u, response_packet.payload.file_id.value, "Response file ID should be set");
-    ASSERT_EQ(static_cast<uint32_t>(InterfaceError::SUCCESS), response_packet.payload.error, "Response error should be set");
+    ASSERT_EQ(static_cast<uint32_t>(ProtocolError::SUCCESS), response_packet.payload.error, "Response error should be set");
 }
 
 // =============================================================================

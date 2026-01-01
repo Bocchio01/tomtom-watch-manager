@@ -2,10 +2,11 @@
 
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
+#include "tomtom/interface/protocol/protocol.hpp"
 
 namespace tomtom
 {
-    Watch::Watch(std::shared_ptr<DeviceConnection> conn) : connection(std::move(conn))
+    Watch::Watch(std::shared_ptr<connection::DeviceConnection> conn) : connection(std::move(conn))
     {
         if (!connection)
         {
@@ -16,6 +17,9 @@ namespace tomtom
         {
             throw std::runtime_error("Failed to open connection to the watch");
         }
+
+        // Initialize the packet handler with the active connection
+        packet_handler_ = std::make_unique<interface::codec::PacketHandler>(connection);
 
         spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})",
                      getProductName(), getProductId(), getSerialNumber());
@@ -40,5 +44,27 @@ namespace tomtom
             connection = std::move(other.connection);
         }
         return *this;
+    }
+
+    std::time_t Watch::getTime()
+    {
+        spdlog::debug("Requesting time from watch...");
+
+        // 1. Create the request packet
+        interface::protocol::GetWatchTimeTx request;
+
+        // 2. Execute the transaction
+        auto response = packet_handler_->transaction<interface::protocol::GetWatchTimeTx, interface::protocol::GetWatchTimeRx>(request);
+
+        // 3. Process the data
+        uint32_t raw_time = response.payload.time;
+
+        // Convert big-endian to host-endian
+        std::time_t t = static_cast<std::time_t>(TT_BIGENDIAN(raw_time));
+
+        // Optional: Print it immediately like your old function did
+        spdlog::info("Watch Time: {}", std::asctime(std::gmtime(&t)));
+
+        return t;
     }
 }
