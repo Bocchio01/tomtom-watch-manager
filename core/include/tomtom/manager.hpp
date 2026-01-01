@@ -26,9 +26,9 @@ namespace tomtom
          * Scans devices and returns information about all connected TomTom watches
          * without establishing full connections.
          *
-         * @return A vector of WatchInfo structures containing basic information about each watch.
+         * @return A vector of DeviceInfo structures containing basic information about each watch.
          */
-        std::vector<WatchInfo> detectWatches();
+        std::vector<DeviceInfo> detectWatches();
 
         /**
          * @brief Connects to the first available TomTom watch.

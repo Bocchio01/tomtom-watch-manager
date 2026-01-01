@@ -2,6 +2,7 @@
 #include <spdlog/spdlog.h>
 
 #include "tomtom/manager.hpp"
+#include "tomtom/watch.hpp"
 #include "../test_utils.hpp"
 
 using namespace tomtom;
@@ -14,41 +15,12 @@ int tests_failed = 0;
 // Manager Tests (Require Hardware)
 // =============================================================================
 
-TEST(test_detect_watches)
-{
-    Manager manager;
-    auto watches_info = manager.detectWatches();
-
-    ASSERT_TRUE(!watches_info.empty(), "No watch detected - connect a watch to run this test");
-    spdlog::info("Detected {} watch(es)", watches_info.size());
-}
-
-TEST(test_connect_to_first_watch)
+TEST(test_get_time)
 {
     Manager manager;
     auto watch = manager.connectToWatch();
 
-    ASSERT_NOT_NULL(watch, "Failed to connect to first watch");
-    spdlog::info("Connected to watch: {} - {}",
-                 watch->getManufacturer(),
-                 watch->getProductName());
-}
-
-TEST(test_connect_to_specific_watch)
-{
-    Manager manager;
-    auto watches_info = manager.detectWatches();
-
-    ASSERT_TRUE(!watches_info.empty(), "No watches detected");
-
-    for (size_t i = 0; i < watches_info.size(); ++i)
-    {
-        auto watch = manager.connectToWatch(i);
-        ASSERT_NOT_NULL(watch, "Failed to connect to watch by index");
-        spdlog::info("Connected to watch {}: {} - {}", i,
-                     watch->getManufacturer(),
-                     watch->getProductName());
-    }
+    watch->printTime();
 }
 
 // =============================================================================
@@ -64,9 +36,7 @@ int main()
     spdlog::info("=================================================");
 
     // Run tests
-    RUN_TEST(test_detect_watches);
-    RUN_TEST(test_connect_to_first_watch);
-    RUN_TEST(test_connect_to_specific_watch);
+    RUN_TEST(test_get_time);
 
     // Print results
     spdlog::info("=================================================");

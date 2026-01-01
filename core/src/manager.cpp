@@ -18,18 +18,18 @@ namespace tomtom
         spdlog::debug("Manager destroyed");
     }
 
-    std::vector<WatchInfo> Manager::detectWatches()
+    std::vector<DeviceInfo> Manager::detectWatches()
     {
         spdlog::debug("Detecting TomTom watches");
 
         refreshDeviceCache();
 
-        std::vector<WatchInfo> watches;
+        std::vector<DeviceInfo> watches;
         watches.reserve(cachedDevices_.size());
 
         for (const auto &device : cachedDevices_)
         {
-            WatchInfo info;
+            DeviceInfo info;
             info.product_id = device.product_id;
             info.serial_number = device.serial_number;
 
@@ -91,7 +91,7 @@ namespace tomtom
 
         try
         {
-            spdlog::info("Connecting to watch: {} (serial: {})", device.product_id, device.serial_number);
+            spdlog::info("Connecting to watch: {} (serial: {})", static_cast<uint16_t>(device.product_id), device.serial_number);
 
             auto connection = DeviceConnectionFactory::create(device);
             auto watch = std::make_shared<Watch>(std::move(connection));

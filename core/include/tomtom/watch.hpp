@@ -1,55 +1,29 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <cstdint>
 #include <memory>
 #include <ctime>
+#include <map>
+#include <functional>
+
+#include <iostream>
 
 #include "tomtom/connection/connection.hpp"
+#include "tomtom/interface/interface.hpp"
+#include "tomtom/defines.hpp"
 
 using namespace tomtom::connection;
 
 namespace tomtom
 {
-    enum class WatchError
-    {
-        NoError,
-        UnableToSendPacket,
-        UnableToReceivePacket,
-        InvalidResponse,
-        IncorrectResponseLength,
-        OutOfSyncResponse,
-        UnexpectedResponse,
-        NoMatchingWatch,
-        NotAWatch,
-        UnableToOpenDevice,
-        FileOpen,
-        FileNotOpen,
-        NoMoreFiles,
-        VerifyError,
-        ParseError,
-        NoData,
-        InvalidParameter,
-    };
-
-    struct WatchInfo
-    {
-        uint32_t product_id;
-        uint32_t firmware_version;
-        uint32_t ble_version;
-        std::string serial_number;
-        std::string manufacturer;
-        std::string product_name;
-    };
-
     /**
      * @brief Represents a TomTom watch device and provides access to its data.
      */
     class Watch
     {
-
     public:
-        WatchInfo info;
         std::shared_ptr<DeviceConnection> connection;
 
     public:
@@ -71,10 +45,42 @@ namespace tomtom
         Watch &operator=(Watch &&) noexcept;
 
         // Getters for watch properties
-        uint32_t getProductId() const { return info.product_id; }
-        std::string getSerialNumber() const { return info.serial_number; }
-        std::string getManufacturer() const { return info.manufacturer; }
-        std::string getProductName() const { return info.product_name; }
+        uint16_t getVendorId() const { return static_cast<uint16_t>(connection->deviceInfo().vendor_id); }
+        uint16_t getProductId() const { return static_cast<uint16_t>(connection->deviceInfo().product_id); }
+        std::string_view getProductName() const { return connection->deviceInfo().product_name; }
+        std::string_view getManufacturer() const { return connection->deviceInfo().manufacturer; }
+        std::string_view getSerialNumber() const { return connection->deviceInfo().serial_number; }
+
+        void printTime()
+        {
+            using namespace tomtom::interface;
+
+            // Create packet to request watch time
+            GetWatchTimeTxPayload payload;
+            Packet<GetWatchTimeTxPayload> packet(payload);
+
+            // Send packet
+            int bytes_written = connection->write(reinterpret_cast<const uint8_t *>(&packet), packet.size(), 1000);
+            if (bytes_written != static_cast<int>(packet.size()))
+            {
+                throw std::runtime_error("Failed to write GetWatchTime packet");
+            }
+
+            // Read response
+            Packet<GetWatchTimeRxPayload> response_packet;
+            int bytes_read = connection->read(reinterpret_cast<uint8_t *>(&response_packet), response_packet.size(), 1000);
+            if (bytes_read != static_cast<int>(response_packet.size()))
+            {
+                throw std::runtime_error("Failed to read GetWatchTime response");
+            }
+
+            // Extract time from response
+            uint32_t watch_time = response_packet.payload.time;
+
+            // Convert to time_t and print
+            std::time_t t = static_cast<std::time_t>(TT_BIGENDIAN(watch_time));
+            std::cout << "Watch Time: " << std::asctime(std::gmtime(&t));
+        }
     };
 
 }

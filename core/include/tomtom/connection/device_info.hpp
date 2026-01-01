@@ -7,9 +7,28 @@
 namespace tomtom::connection
 {
     /**
+     * @brief Vendor ID enumeration.
+     */
+    enum class VendorID : uint16_t
+    {
+        TOMTOM = 0x1390,
+    };
+
+    /**
+     * @brief Product ID enumeration.
+     */
+    enum class ProductID : uint16_t
+    {
+        MULTISPORT = 0x7474,
+        SPARK_MUSIC = 0x7475,
+        SPARK_CARDIO = 0x7477,
+        TOUCH = 0x7480,
+    };
+
+    /**
      * @brief Transport type enumeration.
      */
-    enum class TransportType
+    enum class TransportType : uint8_t
     {
         USB,
         BLE,
@@ -37,14 +56,12 @@ namespace tomtom::connection
      */
     struct DeviceInfo
     {
-        std::string manufacturer;  // e.g. "TomTom Fitness"
+        VendorID vendor_id;
+        ProductID product_id;
         std::string product_name;  // e.g. "Runner"
+        std::string manufacturer;  // e.g. "TomTom Fitness"
         std::string serial_number; // e.g. "HC4354G00150"
-        uint16_t vendor_id;        // e.g. 0x0483
-        uint16_t product_id;       // e.g. 0x5750
-        TransportType transport;   // e.g. USB, BLE
-
-        // Type-safe union using std::variant
+        TransportType transport;
         std::variant<BLEDeviceDetails, USBDeviceDetails> details;
     };
 }

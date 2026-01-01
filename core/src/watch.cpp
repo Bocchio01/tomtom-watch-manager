@@ -2,7 +2,6 @@
 
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
-#include "tomtom/protocol/protocol_types.hpp"
 
 namespace tomtom
 {
@@ -18,13 +17,8 @@ namespace tomtom
             throw std::runtime_error("Failed to open connection to the watch");
         }
 
-        const auto &devInfo = connection->deviceInfo();
-        info.product_id = devInfo.product_id;
-        info.serial_number = devInfo.serial_number;
-        info.manufacturer = devInfo.manufacturer;
-        info.product_name = devInfo.product_name;
-
-        spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})", info.product_name, info.product_id, info.serial_number);
+        spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})",
+                     getProductName(), getProductId(), getSerialNumber());
     }
 
     Watch::~Watch()
@@ -35,9 +29,7 @@ namespace tomtom
         }
     }
 
-    Watch::Watch(Watch &&other) noexcept
-        : info(std::move(other.info)),
-          connection(std::move(other.connection))
+    Watch::Watch(Watch &&other) noexcept : connection(std::move(other.connection))
     {
     }
 
@@ -46,7 +38,6 @@ namespace tomtom
         if (this != &other)
         {
             connection = std::move(other.connection);
-            info = std::move(other.info);
         }
         return *this;
     }
