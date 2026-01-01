@@ -4,7 +4,7 @@
 #include <vector>
 #include <optional>
 #include "tomtom/watch.hpp"
-#include "tomtom/connection/device_info.hpp"
+#include "tomtom/transport/device_info.hpp"
 
 namespace tomtom
 {
@@ -28,7 +28,7 @@ namespace tomtom
          *
          * @return A vector of DeviceInfo structures containing basic information about each watch.
          */
-        std::vector<connection::DeviceInfo> detectWatches();
+        std::vector<transport::DeviceInfo> detectWatches();
 
         /**
          * @brief Connects to the first available TomTom watch.
@@ -71,7 +71,7 @@ namespace tomtom
         bool hasWatches() const;
 
     private:
-        std::vector<connection::DeviceInfo> cachedDevices_;
+        std::vector<transport::DeviceInfo> cachedDevices_;
 
         void refreshDeviceCache();
     };

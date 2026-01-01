@@ -2,11 +2,11 @@
 
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
-#include "tomtom/interface/protocol/protocol.hpp"
+#include "tomtom/protocol/definition/protocol.hpp"
 
 namespace tomtom
 {
-    Watch::Watch(std::shared_ptr<connection::DeviceConnection> conn) : connection(std::move(conn))
+    Watch::Watch(std::shared_ptr<transport::DeviceConnection> conn) : connection(std::move(conn))
     {
         if (!connection)
         {
@@ -18,8 +18,7 @@ namespace tomtom
             throw std::runtime_error("Failed to open connection to the watch");
         }
 
-        // Initialize the packet handler with the active connection
-        packet_handler_ = std::make_unique<interface::codec::PacketHandler>(connection);
+        packet_handler_ = std::make_unique<protocol::runtime::PacketHandler>(connection);
 
         spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})",
                      getProductName(), getProductId(), getSerialNumber());
@@ -51,10 +50,10 @@ namespace tomtom
         spdlog::debug("Requesting time from watch...");
 
         // 1. Create the request packet
-        interface::protocol::GetWatchTimeTx request;
+        protocol::definition::GetWatchTimeTx request;
 
         // 2. Execute the transaction
-        auto response = packet_handler_->transaction<interface::protocol::GetWatchTimeTx, interface::protocol::GetWatchTimeRx>(request);
+        auto response = packet_handler_->transaction<protocol::definition::GetWatchTimeTx, protocol::definition::GetWatchTimeRx>(request);
 
         // 3. Process the data
         uint32_t raw_time = response.payload.time;

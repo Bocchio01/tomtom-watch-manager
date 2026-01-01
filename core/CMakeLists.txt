@@ -4,10 +4,10 @@
 add_library(tomtom_core STATIC
     src/watch.cpp
     src/manager.cpp
-    src/connection/connection.cpp
-    src/connection/connection_factory.cpp
-    src/connection/usb/usb_connection.cpp
-    src/interface/codec/packet_handler.cpp
+    src/transport/connection.cpp
+    src/transport/connection_factory.cpp
+    src/transport/usb/usb_connection.cpp
+    src/protocol/runtime/packet_handler.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
@@ -39,7 +39,7 @@ target_compile_definitions(tomtom_core PRIVATE ENABLE_LOGGING)
 # Platform-specific sources
 if(UNIX AND NOT APPLE)
     target_sources(tomtom_core PRIVATE
-        src/connection/usb/usb_connection_unix.cpp
+        src/transport/usb/usb_connection_unix.cpp
     )
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
@@ -47,7 +47,7 @@ if(UNIX AND NOT APPLE)
     target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS})
 elseif(WIN32)
     target_sources(tomtom_core PRIVATE
-        src/connection/usb/usb_connection_windows.cpp
+        src/transport/usb/usb_connection_windows.cpp
     )
     target_compile_definitions(tomtom_core PRIVATE
         UNICODE
@@ -57,7 +57,7 @@ elseif(WIN32)
 
 elseif(APPLE)
     target_sources(tomtom_core PRIVATE
-        src/connection/usb/usb_connection_macos.cpp
+        src/transport/usb/usb_connection_macos.cpp
     )
     find_library(IOKIT_LIBRARY IOKit REQUIRED)
     find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)

@@ -4,7 +4,7 @@
 #include "tomtom/defines.hpp"
 #include "tomtom/watch.hpp"
 #include "tomtom/manager.hpp"
-#include "tomtom/connection/connection_factory.hpp"
+#include "tomtom/transport/connection_factory.hpp"
 
 namespace tomtom
 {
@@ -18,18 +18,18 @@ namespace tomtom
         spdlog::debug("Manager destroyed");
     }
 
-    std::vector<connection::DeviceInfo> Manager::detectWatches()
+    std::vector<transport::DeviceInfo> Manager::detectWatches()
     {
         spdlog::debug("Detecting TomTom watches");
 
         refreshDeviceCache();
 
-        std::vector<connection::DeviceInfo> watches;
+        std::vector<transport::DeviceInfo> watches;
         watches.reserve(cachedDevices_.size());
 
         for (const auto &device : cachedDevices_)
         {
-            connection::DeviceInfo info;
+            transport::DeviceInfo info;
             info.product_id = device.product_id;
             info.serial_number = device.serial_number;
 
@@ -93,7 +93,7 @@ namespace tomtom
         {
             spdlog::info("Connecting to watch: {} (serial: {})", static_cast<uint16_t>(device.product_id), device.serial_number);
 
-            auto connection = connection::DeviceConnectionFactory::create(device);
+            auto connection = transport::DeviceConnectionFactory::create(device);
             auto watch = std::make_shared<Watch>(std::move(connection));
 
             // TODO: Startup sequence
@@ -123,7 +123,7 @@ namespace tomtom
 
         // Find device with matching serial
         auto it = std::find_if(cachedDevices_.begin(), cachedDevices_.end(),
-                               [&serial](const connection::DeviceInfo &device)
+                               [&serial](const transport::DeviceInfo &device)
                                {
                                    return device.serial_number == serial;
                                });
@@ -151,7 +151,7 @@ namespace tomtom
     void Manager::refreshDeviceCache()
     {
         spdlog::debug("Refreshing device cache");
-        cachedDevices_ = connection::DeviceConnection::enumerate();
+        cachedDevices_ = transport::DeviceConnection::enumerate();
         spdlog::info("Found {} TomTom device(s)", cachedDevices_.size());
     }
 

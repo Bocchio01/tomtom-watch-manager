@@ -2,10 +2,10 @@
 #include <cstring>
 #include <spdlog/spdlog.h>
 
-#include "tomtom/interface/protocol/protocol.hpp"
+#include "tomtom/protocol/definition/protocol.hpp"
 #include "../test_utils.hpp"
 
-using namespace tomtom::interface::protocol;
+using namespace tomtom::protocol::definition;
 
 // Test counter
 int tests_passed = 0;

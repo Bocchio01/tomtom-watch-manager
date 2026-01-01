@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include "tomtom/connection/connection.hpp"
-#include "tomtom/interface/codec/packet_handler.hpp"
+#include "tomtom/transport/connection.hpp"
+#include "tomtom/protocol/runtime/packet_handler.hpp"
 #include "tomtom/defines.hpp"
 
 namespace tomtom
@@ -22,17 +22,17 @@ namespace tomtom
     class Watch
     {
     public:
-        std::shared_ptr<connection::DeviceConnection> connection;
+        std::shared_ptr<transport::DeviceConnection> connection;
 
     private:
-        std::unique_ptr<interface::codec::PacketHandler> packet_handler_;
+        std::unique_ptr<protocol::runtime::PacketHandler> packet_handler_;
 
     public:
         /**
          * @brief Constructs a new Watch instance.
          * @param connection Unique pointer to an established DeviceConnection.
          */
-        explicit Watch(std::shared_ptr<connection::DeviceConnection> connection);
+        explicit Watch(std::shared_ptr<transport::DeviceConnection> connection);
 
         /**
          * @brief Closes the connection to the watch and releases resources.
