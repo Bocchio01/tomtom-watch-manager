@@ -78,20 +78,36 @@ namespace tomtom::protocol::runtime
         ~PacketHandler() = default;
 
         /**
-         * @brief Sends a packet to the device.
+         * @brief Sends a packet to the device, optionally appending variable-length data.
          *
          * @tparam TxPacket Type of packet to send (must be Packet<T>).
          * @param packet The packet instance.
+         * @param extra_data Optional raw bytes to append (e.g., for file writing).
          */
         template <typename TxPacket>
-        void send(const TxPacket &packet)
+        void send(const TxPacket &packet, const std::vector<uint8_t> &extra_data = {})
         {
             TxPacket tx_copy = packet;
             tx_copy.header.counter = current_counter_++;
-            const uint8_t *data = reinterpret_cast<const uint8_t *>(&tx_copy);
-            size_t size = tx_copy.size();
 
-            int result = connection_->write(data, size, 2000); // 2 second timeout
+            // Adjust length field to include the extra data
+            // Header length = (Counter + Type + StructuredPayload) + ExtraData
+            tx_copy.header.length += static_cast<uint8_t>(extra_data.size());
+
+            std::vector<uint8_t> buffer;
+            buffer.reserve(tx_copy.size() + extra_data.size());
+
+            // Serialize structured packet
+            const uint8_t *pkg_ptr = reinterpret_cast<const uint8_t *>(&tx_copy);
+            buffer.insert(buffer.end(), pkg_ptr, pkg_ptr + tx_copy.size());
+
+            // Append extra data
+            if (!extra_data.empty())
+            {
+                buffer.insert(buffer.end(), extra_data.begin(), extra_data.end());
+            }
+
+            int result = connection_->write(buffer.data(), buffer.size(), 2000); // 2 second timeout
             if (result < 0)
             {
                 throw ConnectionError("Failed to write to device (IO Error)");
@@ -141,12 +157,13 @@ namespace tomtom::protocol::runtime
          * @tparam TxPacket Type of the command packet.
          * @tparam RxPacket Type of the expected response packet.
          * @param tx The command packet to send.
+         * @param extra_data Optional raw bytes to append to the request.
          * @return PacketResponse<RxPacket> The response with raw payload bytes.
          */
         template <typename TxPacket, typename RxPacket>
-        PacketResponse<RxPacket> transaction(const TxPacket &tx)
+        PacketResponse<RxPacket> transaction(const TxPacket &tx, const std::vector<uint8_t> &extra_data = {})
         {
-            send(tx);
+            send(tx, extra_data);
             auto rx = receive<RxPacket>();
 
             // Validate that the response corresponds to the request if needed

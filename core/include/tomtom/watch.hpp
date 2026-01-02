@@ -13,6 +13,9 @@
 #include "tomtom/transport/connection.hpp"
 #include "tomtom/protocol/definition/protocol.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"
+#include "tomtom/protocol/services/file_service.hpp"
+#include "tomtom/protocol/services/watch_info_service.hpp"
+#include "tomtom/protocol/services/watch_control_service.hpp"
 #include "tomtom/defines.hpp"
 
 namespace tomtom
@@ -26,7 +29,10 @@ namespace tomtom
         std::shared_ptr<transport::DeviceConnection> connection;
 
     private:
-        std::unique_ptr<protocol::runtime::PacketHandler> packet_handler_;
+        std::shared_ptr<protocol::runtime::PacketHandler> packet_handler_;
+        std::unique_ptr<protocol::services::FileService> file_service_;
+        std::unique_ptr<protocol::services::WatchInfoService> info_service_;
+        std::unique_ptr<protocol::services::WatchControlService> control_service_;
 
     public:
         /**
@@ -53,20 +59,24 @@ namespace tomtom
         std::string_view getManufacturer() const { return connection->deviceInfo().manufacturer; }
         std::string_view getSerialNumber() const { return connection->deviceInfo().serial_number; }
 
+        // Service accessors
         /**
-         * @brief Retrieves the current time from the watch.
-         * @return std::time_t The watch time.
+         * @brief Get the FileService for file operations.
+         * @return Reference to the FileService object.
          */
-        std::time_t getTime();
+        protocol::services::FileService &files() { return *file_service_; }
 
         /**
-         * @brief Get firmaware version string from the watch.
-         * @return std::string Firmware version.
+         * @brief Get the WatchInfoService for information queries.
+         * @return Reference to the WatchInfoService object.
          */
-        std::string getFirmwareVersion();
+        protocol::services::WatchInfoService &info() { return *info_service_; }
 
-        void listFiles();
-        void readFile(protocol::definition::FileId file_id);
+        /**
+         * @brief Get the WatchControlService for control operations.
+         * @return Reference to the WatchControlService object.
+         */
+        protocol::services::WatchControlService &control() { return *control_service_; }
     };
 
 }

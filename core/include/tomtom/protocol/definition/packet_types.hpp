@@ -28,12 +28,13 @@ namespace tomtom::protocol::definition
         OPEN_FILE_READ = 0x06,
         READ_FILE_DATA_REQUEST = 0x07,
         READ_FILE_DATA_RESPONSE = 0x09,
-        FIND_CLOSE = 0x0A,
+        // FIND_CLOSE = 0x0A,
         CLOSE_FILE = 0x0C,
 
         // Watch Control
         FORMAT_WATCH = 0x0E,
         RESET_DEVICE = 0x10,
+        RESET_GPS_PROCESSOR = 0x1D,
 
         // File Discovery
         FIND_FIRST_FILE = 0x11,
@@ -41,7 +42,6 @@ namespace tomtom::protocol::definition
 
         // Watch Information
         GET_WATCH_TIME = 0x14,
-        RESET_GPS_PROCESSOR = 0x1D,
         GET_PRODUCT_ID = 0x20,
         GET_FIRMWARE_VERSION = 0x21,
         GET_BLE_VERSION = 0x28,

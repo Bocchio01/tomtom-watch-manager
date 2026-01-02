@@ -19,7 +19,11 @@ option(GENERATE_DOCS "Generate documentation with Doxygen" OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
+# Enable Link-Time Optimization only for Release builds
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+endif()
 
 if(MSVC)
     add_compile_options(/W4)

@@ -7,6 +7,9 @@ add_library(tomtom_core STATIC
     src/transport/connection.cpp
     src/transport/connection_factory.cpp
     src/transport/usb/usb_connection.cpp
+    src/protocol/services/file_service.cpp
+    src/protocol/services/watch_control_service.cpp
+    src/protocol/services/watch_info_service.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
