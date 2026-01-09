@@ -1,6 +1,7 @@
 # ---------------------------------------------------------
 # Library definition
 # ---------------------------------------------------------
+
 add_library(tomtom_core STATIC
     src/watch.cpp
     src/manager.cpp
@@ -10,6 +11,19 @@ add_library(tomtom_core STATIC
     src/protocol/services/file_service.cpp
     src/protocol/services/watch_control_service.cpp
     src/protocol/services/watch_info_service.cpp
+
+    # File domain services
+    src/files/activity/activity_parser.cpp
+    src/files/activity/activity_service.cpp
+    src/files/preferences/preferences_parser.cpp
+    src/files/preferences/preferences_serializer.cpp
+    src/files/preferences/preferences_service.cpp
+    src/files/tracking/tracking_service.cpp
+    src/files/routes/route_service.cpp
+    src/files/manifest/manifest_parser.cpp
+    src/files/manifest/manifest_service.cpp
+    src/files/workouts/workouts_parser.cpp
+    src/files/workouts/workouts_service.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
@@ -20,6 +34,7 @@ add_library(TomTomWatch::core ALIAS tomtom_core)
 target_include_directories(tomtom_core
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+
     $<INSTALL_INTERFACE:include>
 )
 
@@ -35,8 +50,16 @@ set_target_properties(tomtom_core PROPERTIES
 # ---------------------------------------------------------
 # Optional logging support (spdlog is fetched in root)
 # ---------------------------------------------------------
-target_link_libraries(tomtom_core PRIVATE spdlog::spdlog)
-target_compile_definitions(tomtom_core PRIVATE ENABLE_LOGGING)
+target_link_libraries(tomtom_core
+    PRIVATE spdlog::spdlog
+)
+target_compile_definitions(tomtom_core PRIVATE
+    ENABLE_LOGGING
+    SPDLOG_HEADER_ONLY
+)
+
+# Note: Protobuf integration will be completed when proto files are generated
+# See core/proto/README.md for instructions on generating C++ code from .proto files
 
 # Platform-specific sources
 if(UNIX AND NOT APPLE)

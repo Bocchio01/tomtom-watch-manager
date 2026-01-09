@@ -18,6 +18,13 @@
 #include "tomtom/protocol/services/watch_control_service.hpp"
 #include "tomtom/defines.hpp"
 
+// Domain-specific file services
+#include "tomtom/files/activity/activity.hpp"
+#include "tomtom/files/preferences/preferences.hpp"
+#include "tomtom/files/tracking/tracking.hpp"
+#include "tomtom/files/routes/route.hpp"
+#include "tomtom/files/manifest/manifest_service.hpp"
+
 namespace tomtom
 {
     /**
@@ -30,9 +37,16 @@ namespace tomtom
 
     private:
         std::shared_ptr<protocol::runtime::PacketHandler> packet_handler_;
-        std::unique_ptr<protocol::services::FileService> file_service_;
+        std::shared_ptr<protocol::services::FileService> file_service_;
         std::unique_ptr<protocol::services::WatchInfoService> info_service_;
         std::unique_ptr<protocol::services::WatchControlService> control_service_;
+
+        // Domain-specific services
+        std::unique_ptr<files::activity::ActivityService> activity_service_;
+        std::unique_ptr<files::preferences::PreferencesService> preferences_service_;
+        std::unique_ptr<files::tracking::TrackingService> tracking_service_;
+        std::unique_ptr<files::routes::RouteService> route_service_;
+        std::unique_ptr<files::manifest::ManifestService> manifest_service_;
 
     public:
         /**
@@ -77,6 +91,37 @@ namespace tomtom
          * @return Reference to the WatchControlService object.
          */
         protocol::services::WatchControlService &control() { return *control_service_; }
+
+        // Domain-specific service accessors
+        /**
+         * @brief Access activity-related operations (workouts, GPS data, etc.)
+         * @return Reference to ActivityService
+         */
+        files::activity::ActivityService &activities() { return *activity_service_; }
+
+        /**
+         * @brief Access watch preferences and settings
+         * @return Reference to PreferencesService
+         */
+        files::preferences::PreferencesService &preferences() { return *preferences_service_; }
+
+        /**
+         * @brief Access daily activity tracking data (steps, calories)
+         * @return Reference to TrackingService
+         */
+        files::tracking::TrackingService &tracking() { return *tracking_service_; }
+
+        /**
+         * @brief Access route/track management
+         * @return Reference to RouteService
+         */
+        files::routes::RouteService &routes() { return *route_service_; }
+
+        /**
+         * @brief Access file manifest and storage information
+         * @return Reference to ManifestService
+         */
+        files::manifest::ManifestService &manifest() { return *manifest_service_; }
     };
 
 }

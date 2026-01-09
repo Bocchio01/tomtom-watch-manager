@@ -68,6 +68,12 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
+# Configure spdlog to be header-only to avoid Windows linking issues
+set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(SPDLOG_BUILD_EXAMPLE OFF CACHE BOOL "" FORCE)
+set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(SPDLOG_INSTALL OFF CACHE BOOL "" FORCE)
+
 # Make all declared dependencies available at once
 set(_fetch_deps "")
 list(APPEND _fetch_deps spdlog)

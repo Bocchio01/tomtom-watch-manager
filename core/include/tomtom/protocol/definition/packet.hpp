@@ -1,4 +1,7 @@
 #pragma once
+
+#include <spdlog/spdlog.h>
+
 #include "packet_header.hpp"
 #include "payload_traits.hpp"
 
