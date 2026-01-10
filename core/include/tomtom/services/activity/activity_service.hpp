@@ -1,11 +1,7 @@
-// ============================================================================
-// activity_service.hpp - High-level activity operations
-// ============================================================================
 #pragma once
 
 #include "activity_models.hpp"
 #include "activity_parser.hpp"
-#include "../common/export_formats.hpp"
 #include "tomtom/services/file_service.hpp"
 
 #include <memory>
@@ -84,31 +80,6 @@ namespace tomtom::services::activity
         size_t removeAll();
 
         // ====================================================================
-        // Export Functions
-        // ====================================================================
-
-        /**
-         * @brief Export activity to GPX format
-         * @param activity The activity to export
-         * @return GPX XML string
-         */
-        std::string exportToGPX(const models::Activity &activity);
-
-        /**
-         * @brief Export activity to TCX format
-         * @param activity The activity to export
-         * @return TCX XML string
-         */
-        std::string exportToTCX(const models::Activity &activity);
-
-        /**
-         * @brief Export activity to CSV format
-         * @param activity The activity to export
-         * @return CSV string
-         */
-        std::string exportToCSV(const models::Activity &activity);
-
-        // ====================================================================
         // Utility Functions
         // ====================================================================
 
@@ -140,12 +111,6 @@ namespace tomtom::services::activity
 
         // Helper to build metadata from activity file
         models::ActivityInfo buildActivityInfo(FileId file_id, const std::vector<uint8_t> &data);
-
-        // Helper to convert activity records to track points
-        std::vector<common::TrackPoint> buildTrackPoints(const models::Activity &activity);
-
-        // Helper to build activity metadata for export
-        common::ActivityMetadata buildExportMetadata(const models::Activity &activity);
     };
 
 } // namespace tomtom::services::activity

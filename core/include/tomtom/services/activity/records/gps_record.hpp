@@ -1,6 +1,3 @@
-// ============================================================================
-// gps_record.hpp - GPS position record (Tag 0x22)
-// ============================================================================
 #pragma once
 
 #include "activity_record.hpp"
@@ -49,6 +46,11 @@ namespace tomtom::services::activity::records
         {
             auto rec = std::make_unique<GPSRecord>();
             std::memcpy(static_cast<GPSRecordData *>(rec.get()), ptr, sizeof(GPSRecordData));
+            if (rec->timestamp == 0xFFFFFFFF)
+            {
+                // Invalid GPS record (no fix)
+                return nullptr;
+            }
             return rec;
         }
 

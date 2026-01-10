@@ -1,6 +1,3 @@
-// ============================================================================
-// preferences_parser.cpp - Preferences XML parser implementation
-// ============================================================================
 
 #include "tomtom/services/preferences/preferences_parser.hpp"
 #include <spdlog/spdlog.h>

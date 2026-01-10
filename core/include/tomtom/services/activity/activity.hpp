@@ -1,6 +1,3 @@
-// ============================================================================
-// activity.hpp - Activity domain public API
-// ============================================================================
 #pragma once
 
 // Main includes for activity module
@@ -66,13 +63,5 @@ namespace tomtom::services::activity
     // Re-export commonly used types for convenience
     using Activity = models::Activity;
     using ActivityInfo = models::ActivityInfo;
-
-    // Record types
-    using records::ActivityRecord;
-    using records::GPSRecord;
-    using records::HeartRateRecord;
-    using records::LapRecord;
-    using records::StatusRecord;
-    using records::SummaryRecord;
 
 } // namespace tomtom::services::activity

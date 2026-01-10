@@ -1,6 +1,3 @@
-// ============================================================================
-// interval_finish_record.hpp - Interval finish record (Tag 0x3B)
-// ============================================================================
 #pragma once
 
 #include "activity_record.hpp"

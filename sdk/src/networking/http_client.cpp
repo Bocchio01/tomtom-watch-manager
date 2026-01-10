@@ -1,8 +1,4 @@
-// ============================================================================
-// http_utils.cpp - Simple HTTP download utilities implementation
-// ============================================================================
-
-#include "tomtom/utils/http_utils.hpp"
+#include "tomtom/sdk/networking/http_client.hpp"
 #include <spdlog/spdlog.h>
 
 #ifdef _WIN32
@@ -12,7 +8,7 @@
 #include <curl/curl.h>
 #endif
 
-namespace tomtom::utils
+namespace tomtom::sdk::networking
 {
 
 #ifdef _WIN32

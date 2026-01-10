@@ -1,6 +1,3 @@
-// ============================================================================
-// activity_types.hpp - Activity enums and constants
-// ============================================================================
 #pragma once
 
 #include <cstdint>
@@ -43,16 +40,19 @@ namespace tomtom::services::activity
         FileHeader = 0x20,
         Status = 0x21,
         GPS = 0x22,
+        ExtendedGPS = 0x23,
         HeartRate = 0x25,
         Summary = 0x27,
         PoolSize = 0x2A,
         WheelSize = 0x2B,
         TrainingSetup = 0x2D,
         Lap = 0x2F,
+        TimeToSatelliteFix = 0x30,
         CyclingCadence = 0x31,
         Treadmill = 0x32,
         Swim = 0x34,
         GoalProgress = 0x35,
+        GenericRecord37 = 0x37,
         IntervalSetup = 0x39,
         IntervalStart = 0x3A,
         IntervalFinish = 0x3B,
@@ -62,8 +62,13 @@ namespace tomtom::services::activity
         HeartRateRecovery = 0x3F,
         IndoorCycling = 0x40,
         Gym = 0x41,
+        Movement = 0x42,
+        RouteDescription = 0x43,
+        Elevation = 0x47,
+        Battery = 0x49,
         FitnessPoint = 0x4A,
-        Unknown4BVarLen = 0x4B,
+        Workout4B = 0x4B,
+        Workout4C = 0x4C,
         UnknownTag = 0xFF
     };
 
@@ -238,8 +243,8 @@ namespace tomtom::services::activity
             return "Gym";
         case RecordTag::FitnessPoint:
             return "FitnessPoint";
-        case RecordTag::Unknown4BVarLen:
-            return "Unknown4BVarLen";
+        case RecordTag::Workout4B:
+            return "Workout4B";
         default:
             return "Unknown";
         }

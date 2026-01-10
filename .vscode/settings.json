@@ -5,5 +5,6 @@
         "Doxyfile": "shellscript",
         "Doxyfile.in": "shellscript",
     },
-    "cmake.options.statusBarVisibility": "compact"
+    "cmake.options.statusBarVisibility": "compact",
+    "debug.breakpointsView.presentation": "tree"
 }

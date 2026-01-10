@@ -21,10 +21,10 @@
 #include "tomtom/services/watch_control_service.hpp"
 #include "tomtom/services/activity/activity.hpp"
 #include "tomtom/services/preferences/preferences.hpp"
-#include "tomtom/services/tracking/tracking.hpp"
-#include "tomtom/services/routes/route.hpp"
-#include "tomtom/services/manifest/manifest_service.hpp"
 #include "tomtom/services/gps_quickfix/gps_quickfix_service.hpp"
+// #include "tomtom/services/tracking/tracking.hpp"  // TODO: Not yet implemented
+// #include "tomtom/services/routes/routes.hpp"     // TODO: Not yet implemented
+// #include "tomtom/services/manifest/manifest.hpp" // TODO: Not yet implemented
 
 namespace tomtom
 {
@@ -45,9 +45,6 @@ namespace tomtom
         // Domain-specific services
         std::unique_ptr<services::activity::ActivityService> activity_service_;
         std::unique_ptr<services::preferences::PreferencesService> preferences_service_;
-        std::unique_ptr<services::tracking::TrackingService> tracking_service_;
-        std::unique_ptr<services::routes::RouteService> route_service_;
-        std::unique_ptr<services::manifest::ManifestService> manifest_service_;
         std::unique_ptr<services::gps_quickfix::GpsQuickFixService> gps_quickfix_service_;
 
     public:
@@ -106,24 +103,6 @@ namespace tomtom
          * @return Reference to PreferencesService
          */
         services::preferences::PreferencesService &preferences() { return *preferences_service_; }
-
-        /**
-         * @brief Access daily activity tracking data (steps, calories)
-         * @return Reference to TrackingService
-         */
-        services::tracking::TrackingService &tracking() { return *tracking_service_; }
-
-        /**
-         * @brief Access route/track management
-         * @return Reference to RouteService
-         */
-        services::routes::RouteService &routes() { return *route_service_; }
-
-        /**
-         * @brief Access file manifest and storage information
-         * @return Reference to ManifestService
-         */
-        services::manifest::ManifestService &manifest() { return *manifest_service_; }
 
         /**
          * @brief Access GPS QuickFix update operations

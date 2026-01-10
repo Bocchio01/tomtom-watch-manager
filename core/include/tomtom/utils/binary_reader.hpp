@@ -1,6 +1,3 @@
-// ============================================================================
-// binary_reader.hpp - Helper class for reading binary data
-// ============================================================================
 #pragma once
 
 #include <vector>
@@ -8,7 +5,7 @@
 #include <stdexcept>
 #include <cstring>
 
-namespace tomtom::services::common
+namespace tomtom::utils
 {
 
     /**

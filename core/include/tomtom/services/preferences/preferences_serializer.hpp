@@ -1,6 +1,3 @@
-// ============================================================================
-// preferences_serializer.hpp - Preferences XML serializer
-// ============================================================================
 #pragma once
 
 #include "preferences_model.hpp"

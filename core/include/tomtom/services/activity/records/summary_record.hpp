@@ -1,6 +1,3 @@
-// ============================================================================
-// summary_record.hpp - Activity summary record (Tag 0x27)
-// ============================================================================
 #pragma once
 
 #include "activity_record.hpp"
@@ -20,20 +17,11 @@ namespace tomtom::services::activity::records
     struct SummaryRecordData
     {
         uint8_t activity_type;     // Type of activity (see ActivityType enum)
-        uint32_t duration_seconds; // Total duration in seconds
         float distance_meters;     // Total distance in meters
+        uint32_t duration_seconds; // Total duration in seconds
         uint16_t calories;         // Total calories burned
-        uint32_t timestamp_local;  // Local time (epoch seconds)
-        uint32_t timestamp_utc;    // UTC time (epoch seconds)
-        uint16_t heart_rate_avg;   // Average heart rate (BPM)
-        uint16_t heart_rate_max;   // Maximum heart rate (BPM)
-        uint16_t heart_rate_min;   // Minimum heart rate (BPM)
-        uint16_t ascent;           // Total ascent in meters
-        uint16_t descent;          // Total descent in meters
-        uint8_t cadence_avg;       // Average cadence
-        uint8_t cadence_max;       // Maximum cadence
-        uint16_t steps;            // Total steps (running/walking)
-        uint32_t reserved;         // Reserved for future use
+        uint16_t reserved1;        // Reserved
+        uint32_t duration2;        // Duplicate of duration in seconds (for compatibility?)
     };
 #pragma pack(pop)
 
@@ -121,30 +109,6 @@ namespace tomtom::services::activity::records
             if (duration_seconds <= 0)
                 return 0;
             return (distance_meters / 1609.344) / (duration_seconds / 3600.0);
-        }
-
-        /**
-         * @brief Check if heart rate data is available
-         */
-        bool hasHeartRate() const
-        {
-            return heart_rate_avg > 0;
-        }
-
-        /**
-         * @brief Check if elevation data is available
-         */
-        bool hasElevation() const
-        {
-            return ascent > 0 || descent > 0;
-        }
-
-        /**
-         * @brief Check if cadence data is available
-         */
-        bool hasCadence() const
-        {
-            return cadence_avg > 0;
         }
     };
 

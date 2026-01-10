@@ -1,6 +1,3 @@
-// ============================================================================
-// activity_service.cpp - High-level activity operations implementation
-// ============================================================================
 
 #include "tomtom/services/activity/activity_service.hpp"
 #include <spdlog/spdlog.h>
@@ -94,28 +91,6 @@ namespace tomtom::services::activity
         return count;
     }
 
-    std::string ActivityService::exportToGPX(const models::Activity &activity)
-    {
-        auto track_points = buildTrackPoints(activity);
-        auto metadata = buildExportMetadata(activity);
-
-        return common::exportToGPX(metadata, track_points);
-    }
-
-    std::string ActivityService::exportToTCX(const models::Activity &activity)
-    {
-        auto track_points = buildTrackPoints(activity);
-        auto metadata = buildExportMetadata(activity);
-
-        return common::exportToTCX(metadata, track_points);
-    }
-
-    std::string ActivityService::exportToCSV(const models::Activity &activity)
-    {
-        auto track_points = buildTrackPoints(activity);
-        return common::exportToCSV(track_points);
-    }
-
     FileId ActivityService::getNextActivityFileId()
     {
         // Find the highest activity index
@@ -171,59 +146,6 @@ namespace tomtom::services::activity
         info.file_size = static_cast<uint32_t>(data.size());
 
         return info;
-    }
-
-    std::vector<common::TrackPoint> ActivityService::buildTrackPoints(
-        const models::Activity &activity)
-    {
-        std::vector<common::TrackPoint> points;
-
-        auto gps_records = activity.getGPSRecords();
-        auto hr_records = activity.getHeartRateRecords();
-
-        // Build map of timestamp -> heart rate for quick lookup
-        std::map<uint32_t, uint16_t> hr_map;
-        for (const auto *hr : hr_records)
-        {
-            hr_map[hr->timestamp] = hr->heart_rate;
-        }
-
-        // Convert GPS records to track points
-        for (const auto *gps : gps_records)
-        {
-            common::TrackPoint point;
-            point.latitude = gps->getLatitudeDegrees();
-            point.longitude = gps->getLongitudeDegrees();
-            point.altitude = 0; // TODO: Extract from altitude records
-            point.timestamp = static_cast<std::time_t>(gps->timestamp);
-            point.speed = gps->filtered_speed;
-            point.distance = gps->distance;
-            point.cadence = gps->cycles;
-            point.calories = gps->calories;
-
-            // Find matching heart rate
-            auto hr_it = hr_map.find(gps->timestamp);
-            point.heart_rate = (hr_it != hr_map.end()) ? hr_it->second : 0;
-
-            points.push_back(point);
-        }
-
-        return points;
-    }
-
-    common::ActivityMetadata ActivityService::buildExportMetadata(
-        const models::Activity &activity)
-    {
-        common::ActivityMetadata metadata;
-        metadata.sport_type = std::string(toString(activity.type));
-        metadata.start_time = activity.start_time;
-        metadata.duration_seconds = activity.duration_seconds;
-        metadata.total_distance = activity.distance_meters;
-        metadata.total_calories = activity.calories;
-        metadata.avg_heart_rate = activity.heart_rate_avg.value_or(0);
-        metadata.max_heart_rate = activity.heart_rate_max.value_or(0);
-
-        return metadata;
     }
 
 } // namespace tomtom::services::activity

@@ -1,6 +1,3 @@
-// ============================================================================
-// activity_record.hpp - Base class for all activity record types
-// ============================================================================
 #pragma once
 
 #include "../activity_types.hpp"

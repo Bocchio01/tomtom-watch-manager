@@ -1,6 +1,3 @@
-// ============================================================================
-// preferences_serializer.cpp - Preferences XML serializer implementation
-// ============================================================================
 
 #include "tomtom/services/preferences/preferences_serializer.hpp"
 #include <sstream>

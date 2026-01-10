@@ -1,6 +1,3 @@
-// ============================================================================
-// http_utils.hpp - Simple HTTP download utilities
-// ============================================================================
 #pragma once
 
 #include <string>
@@ -8,7 +5,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace tomtom::utils
+namespace tomtom::sdk::networking
 {
 
     /**

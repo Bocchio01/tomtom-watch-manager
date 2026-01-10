@@ -5,6 +5,7 @@ project(TomTomWatchManager VERSION 1.0 LANGUAGES CXX)
 # Build options
 # =========================================================
 option(BUILD_CORE "Build core library" ON)
+option(BUILD_SDK "Build SDK library" ON)
 option(BUILD_CLI "Build CLI client" OFF)
 option(BUILD_GUI "Build GUI client" OFF)
 
@@ -91,6 +92,11 @@ if(BUILD_CORE)
     add_subdirectory(core)
 endif()
 
+if(BUILD_SDK)
+    message(STATUS "Adding SDK library...")
+    add_subdirectory(sdk)
+endif()
+
 if(BUILD_CLI)
     message(STATUS "Adding CLI client...")
     add_subdirectory(ui/cli)
@@ -159,6 +165,7 @@ message(STATUS " C++ Standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "")
 message(STATUS "Components:")
 message(STATUS " - Core library:      ${BUILD_CORE}")
+message(STATUS " - SDK library:       ${BUILD_SDK}")
 message(STATUS " - CLI client:        ${BUILD_CLI}")
 message(STATUS " - GUI client:        ${BUILD_GUI}")
 message(STATUS "")

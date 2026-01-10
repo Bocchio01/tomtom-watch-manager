@@ -1,6 +1,3 @@
-// ============================================================================
-// preferences_service.hpp - High-level preferences operations
-// ============================================================================
 #pragma once
 
 #include "preferences_model.hpp"

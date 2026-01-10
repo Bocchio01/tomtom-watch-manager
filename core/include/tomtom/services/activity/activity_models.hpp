@@ -1,6 +1,3 @@
-// ============================================================================
-// activity_models.hpp - Activity data structures
-// ============================================================================
 #pragma once
 
 #include "activity_types.hpp"
@@ -36,6 +33,7 @@
 #include <optional>
 #include <cstdio>
 #include <string>
+#include <map>
 
 namespace tomtom::services::activity::models
 {
@@ -66,16 +64,11 @@ namespace tomtom::services::activity::models
         float distance_meters;
         uint16_t calories;
 
-        std::optional<uint16_t> heart_rate_avg;
-        std::optional<uint16_t> heart_rate_max;
-        std::optional<uint16_t> heart_rate_min;
-        std::optional<uint16_t> ascent;
-        std::optional<uint16_t> descent;
-
         // ====================================================================
         // All Records from Activity File
         // ====================================================================
         std::vector<std::unique_ptr<records::ActivityRecord>> records;
+        std::map<RecordTag, uint16_t> record_lengths;
 
         // ====================================================================
         // Convenience Methods

@@ -1,7 +1,3 @@
-// ============================================================================
-// preferences_test.cpp - Unit tests for preferences domain
-// ============================================================================
-
 #include "tomtom/services/preferences/preferences.hpp"
 #include "tomtom/services/file_service.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"

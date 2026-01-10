@@ -1,6 +1,3 @@
-// ============================================================================
-// indoor_cycling_record.hpp - Indoor cycling record (Tag 0x40)
-// ============================================================================
 #pragma once
 
 #include "activity_record.hpp"
@@ -22,7 +19,7 @@ namespace tomtom::services::activity::records
         uint32_t timestamp;
         float distance_meters;
         uint16_t calories;
-        uint16_t cycling_cadence;
+        uint8_t cycling_cadence;
     };
 #pragma pack(pop)
 

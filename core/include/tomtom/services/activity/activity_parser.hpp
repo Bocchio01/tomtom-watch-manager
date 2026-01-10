@@ -1,11 +1,10 @@
-// ============================================================================
-// activity_parser.hpp - TomTom .ttbin activity file parser
-// ============================================================================
 #pragma once
 
 #include "activity_models.hpp"
-#include "../common/binary_reader.hpp"
+#include "../../utils/binary_reader.hpp"
 
+#include <map>
+#include <cstdint>
 #include <vector>
 #include <memory>
 #include <stdexcept>
@@ -42,8 +41,8 @@ namespace tomtom::services::activity
 
     private:
         // Parse individual sections
-        void parseHeader(models::Activity &activity, common::BinaryReader &reader);
-        std::unique_ptr<records::ActivityRecord> parseRecord(common::BinaryReader &reader);
+        void parseHeader(models::Activity &activity, utils::BinaryReader &reader);
+        std::unique_ptr<records::ActivityRecord> parseRecord(std::map<RecordTag, uint16_t> &record_lengths, utils::BinaryReader &reader);
 
         // Validation
         void validateHeader(const models::Activity &activity);

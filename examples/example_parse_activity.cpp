@@ -5,6 +5,7 @@
 
 #include "tomtom/manager.hpp"
 #include "tomtom/services/file_ids.hpp"
+#include "tomtom/sdk/activity_converter.hpp"
 
 using namespace tomtom;
 
@@ -47,7 +48,8 @@ int main(int argc, char *argv[])
             auto activity = watch->activities().get(info.index);
             std::cout << "  Loaded activity with " << activity.records.size() << " records.\n";
 
-            auto gpx_data = watch->activities().exportToGPX(activity);
+            // Use the new lib layer converter
+            auto gpx_data = tomtom::sdk::ActivityConverter::toGPX(activity);
             std::string gpx_filename = "activity_" + std::to_string(info.index) + ".gpx";
             std::ofstream gpx_file(gpx_filename);
             gpx_file << gpx_data;

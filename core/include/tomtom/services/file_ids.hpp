@@ -1,6 +1,3 @@
-// ============================================================================
-// file_ids.hpp - Central definition of all file IDs
-// ============================================================================
 #pragma once
 
 #include "tomtom/protocol/definition/payload/common.hpp"

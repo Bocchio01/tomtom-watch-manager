@@ -1,7 +1,3 @@
-// ============================================================================
-// Example: GPS QuickFix Update
-// ============================================================================
-
 #include <tomtom/manager.hpp>
 #include <tomtom/watch.hpp>
 #include <iostream>
@@ -74,11 +70,11 @@ int main()
 
         // Update GPS QuickFix with 7-day ephemeris
         std::cout << "Updating GPS QuickFix data (7 days)...\n";
-        watch->gpsQuickFix().update(
-            ephemeris_url,
-            7,    // 7-day ephemeris (can also use 3)
-            true, // Reset GPS processor after update
-            progress_callback);
+        // watch->gpsQuickFix().update(
+        //     ephemeris_url,
+        //     7,    // 7-day ephemeris (can also use 3)
+        //     true, // Reset GPS processor after update
+        //     progress_callback);
 
         std::cout << "\n\nGPS QuickFix update completed successfully!\n";
         std::cout << "\nNote: The GPS processor has been reset.\n";

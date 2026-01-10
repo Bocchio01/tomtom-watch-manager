@@ -1,6 +1,3 @@
-// ============================================================================
-// preferences_service.cpp - High-level preferences operations implementation
-// ============================================================================
 
 #include "tomtom/services/preferences/preferences_service.hpp"
 #include "tomtom/services/file_ids.hpp"

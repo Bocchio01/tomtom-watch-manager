@@ -1,6 +1,3 @@
-// ============================================================================
-// heart_rate_recovery_record.hpp - Heart rate recovery record (Tag 0x3F)
-// ============================================================================
 #pragma once
 
 #include "activity_record.hpp"

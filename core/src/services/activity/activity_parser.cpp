@@ -1,6 +1,3 @@
-// ============================================================================
-// activity_parser.cpp - TomTom .ttbin activity file parser implementation
-// ============================================================================
 
 #include "tomtom/services/activity/activity_parser.hpp"
 #include <spdlog/spdlog.h>
@@ -15,7 +12,7 @@ namespace tomtom::services::activity
             throw ActivityParseError("Empty activity file");
         }
 
-        common::BinaryReader reader(data);
+        utils::BinaryReader reader(data);
         models::Activity activity;
 
         // Parse header
@@ -27,7 +24,7 @@ namespace tomtom::services::activity
         {
             try
             {
-                auto record = parseRecord(reader);
+                auto record = parseRecord(activity.record_lengths, reader);
                 if (record)
                 {
                     // Extract summary information from Summary record
@@ -38,19 +35,6 @@ namespace tomtom::services::activity
                         activity.duration_seconds = summary->duration_seconds;
                         activity.distance_meters = summary->distance_meters;
                         activity.calories = summary->calories;
-
-                        if (summary->heart_rate_avg > 0)
-                        {
-                            activity.heart_rate_avg = summary->heart_rate_avg;
-                            activity.heart_rate_max = summary->heart_rate_max;
-                            activity.heart_rate_min = summary->heart_rate_min;
-                        }
-
-                        if (summary->ascent > 0 || summary->descent > 0)
-                        {
-                            activity.ascent = summary->ascent;
-                            activity.descent = summary->descent;
-                        }
                     }
 
                     activity.records.push_back(std::move(record));
@@ -68,23 +52,45 @@ namespace tomtom::services::activity
         return activity;
     }
 
-    void ActivityParser::parseHeader(models::Activity &activity, common::BinaryReader &reader)
+    void ActivityParser::parseHeader(models::Activity &activity, utils::BinaryReader &reader)
     {
         if (reader.remaining() < 24)
         {
             throw ActivityParseError("File too small for header");
         }
 
+        if (static_cast<RecordTag>(reader.readU8()) != RecordTag::FileHeader)
+        {
+            throw ActivityParseError("Missing file header tag");
+        }
+
         // File format version (2 bytes)
         activity.format_version = reader.readU16();
 
-        // Firmware version (6 bytes)
-        activity.firmware_version[0] = reader.readU8();
-        activity.firmware_version[1] = reader.readU8();
-        activity.firmware_version[2] = reader.readU8();
-        activity.firmware_version[3] = reader.readU8();
-        activity.firmware_version[4] = reader.readU8();
-        activity.firmware_version[5] = reader.readU8();
+        // Firmware version (3 or 6 bytes)
+        if (activity.format_version < 10)
+        {
+            activity.firmware_version[0] = reader.readU8();
+            activity.firmware_version[1] = reader.readU8();
+            activity.firmware_version[2] = reader.readU8();
+            activity.firmware_version[3] = 0;
+            activity.firmware_version[4] = 0;
+            activity.firmware_version[5] = 0;
+        }
+        else if (activity.format_version == 10)
+        {
+            activity.firmware_version[0] = reader.readU8();
+            activity.firmware_version[1] = reader.readU8();
+            activity.firmware_version[2] = reader.readU8();
+            activity.firmware_version[3] = reader.readU8();
+            activity.firmware_version[4] = reader.readU8();
+            activity.firmware_version[5] = reader.readU8();
+        }
+        else
+        {
+            throw ActivityParseError("Unsupported format version: " +
+                                     std::to_string(activity.format_version));
+        }
 
         // Product ID (2 bytes)
         activity.product_id = reader.readU16();
@@ -107,14 +113,15 @@ namespace tomtom::services::activity
         // Reserved (1 byte) - skip
         reader.skip(1);
 
-        // Length records (1 byte) - skip
+        // Length records (1 byte)
         uint8_t length_count = reader.readU8();
 
-        // reader.skip(length_count * sizeof(uint16_t) + length_count * sizeof(uint8_t));
+        // Read length records
         for (uint8_t i = 0; i < length_count; ++i)
         {
-            spdlog::debug("Skipping length record {}: tag=0x{:02X}, length={}",
-                          i, reader.readU8(), reader.readU16());
+            uint8_t tag = reader.readU8();
+            uint16_t length = reader.readU16();
+            activity.record_lengths[static_cast<RecordTag>(tag)] = length;
         }
 
         // Initialize summary fields (will be filled from Summary record)
@@ -146,7 +153,7 @@ namespace tomtom::services::activity
         }
     }
 
-    std::unique_ptr<records::ActivityRecord> ActivityParser::parseRecord(common::BinaryReader &reader)
+    std::unique_ptr<records::ActivityRecord> ActivityParser::parseRecord(std::map<RecordTag, uint16_t> &record_lengths, utils::BinaryReader &reader)
     {
         if (reader.eof())
         {
@@ -155,96 +162,119 @@ namespace tomtom::services::activity
 
         // Read record tag
         RecordTag tag = static_cast<RecordTag>(reader.readU8());
+        const uint16_t record_length = record_lengths.count(tag) ? record_lengths[tag] : 0;
         const uint8_t *dataPtr = reader.currentPtr();
 
         // Parse based on tag
         switch (tag)
         {
         case RecordTag::GPS:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::GPSRecordData)));
             reader.skip(sizeof(records::GPSRecordData));
             return records::GPSRecord::fromBinary(dataPtr);
 
         case RecordTag::HeartRate:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::HeartRateRecordData)));
             reader.skip(sizeof(records::HeartRateRecordData));
             return records::HeartRateRecord::fromBinary(dataPtr);
 
         case RecordTag::Summary:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::SummaryRecordData)));
             reader.skip(sizeof(records::SummaryRecordData));
             return records::SummaryRecord::fromBinary(dataPtr);
 
         case RecordTag::Status:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::StatusRecordData)));
             reader.skip(sizeof(records::StatusRecordData));
             return records::StatusRecord::fromBinary(dataPtr);
 
         case RecordTag::Lap:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::LapRecordData)));
             reader.skip(sizeof(records::LapRecordData));
             return records::LapRecord::fromBinary(dataPtr);
 
         case RecordTag::AltitudeUpdate:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::AltitudeRecordData)));
             reader.skip(sizeof(records::AltitudeRecordData));
             return records::AltitudeRecord::fromBinary(dataPtr);
 
         case RecordTag::CyclingCadence:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::CyclingCadenceRecordData)));
             reader.skip(sizeof(records::CyclingCadenceRecordData));
             return records::CyclingCadenceRecord::fromBinary(dataPtr);
 
         case RecordTag::RaceResult:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::RaceResultRecordData)));
             reader.skip(sizeof(records::RaceResultRecordData));
             return records::RaceResultRecord::fromBinary(dataPtr);
 
         case RecordTag::Swim:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::SwimmingRecordData)));
             reader.skip(sizeof(records::SwimmingRecordData));
             return records::SwimmingRecord::fromBinary(dataPtr);
 
         case RecordTag::Treadmill:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::TreadmillRecordData)));
             reader.skip(sizeof(records::TreadmillRecordData));
             return records::TreadmillRecord::fromBinary(dataPtr);
 
         case RecordTag::Gym:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::GymRecordData)));
             reader.skip(sizeof(records::GymRecordData));
             return records::GymRecord::fromBinary(dataPtr);
 
         case RecordTag::FitnessPoint:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::FitnessPointRecordData)));
             reader.skip(sizeof(records::FitnessPointRecordData));
             return records::FitnessPointRecord::fromBinary(dataPtr);
 
         case RecordTag::PoolSize:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::PoolSizeRecordData)));
             reader.skip(sizeof(records::PoolSizeRecordData));
             return records::PoolSizeRecord::fromBinary(dataPtr);
 
         case RecordTag::WheelSize:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::WheelSizeRecordData)));
             reader.skip(sizeof(records::WheelSizeRecordData));
             return records::WheelSizeRecord::fromBinary(dataPtr);
 
         case RecordTag::GoalProgress:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::GoalProgressRecordData)));
             reader.skip(sizeof(records::GoalProgressRecordData));
             return records::GoalProgressRecord::fromBinary(dataPtr);
 
         case RecordTag::TrainingSetup:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::TrainingSetupRecordData)));
             reader.skip(sizeof(records::TrainingSetupRecordData));
             return records::TrainingSetupRecord::fromBinary(dataPtr);
 
         case RecordTag::IntervalSetup:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::IntervalSetupRecordData)));
             reader.skip(sizeof(records::IntervalSetupRecordData));
             return records::IntervalSetupRecord::fromBinary(dataPtr);
 
         case RecordTag::IntervalStart:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::IntervalStartRecordData)));
             reader.skip(sizeof(records::IntervalStartRecordData));
             return records::IntervalStartRecord::fromBinary(dataPtr);
 
         case RecordTag::IntervalFinish:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::IntervalFinishRecordData)));
             reader.skip(sizeof(records::IntervalFinishRecordData));
             return records::IntervalFinishRecord::fromBinary(dataPtr);
 
         case RecordTag::RaceSetup:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::RaceSetupRecordData)));
             reader.skip(sizeof(records::RaceSetupRecordData));
             return records::RaceSetupRecord::fromBinary(dataPtr);
 
         case RecordTag::HeartRateRecovery:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::HeartRateRecoveryRecordData)));
             reader.skip(sizeof(records::HeartRateRecoveryRecordData));
             return records::HeartRateRecoveryRecord::fromBinary(dataPtr);
 
         case RecordTag::IndoorCycling:
+            assert(record_length == (sizeof(uint8_t) + sizeof(records::IndoorCyclingRecordData)));
             reader.skip(sizeof(records::IndoorCyclingRecordData));
             return records::IndoorCyclingRecord::fromBinary(dataPtr);
 
@@ -252,6 +282,28 @@ namespace tomtom::services::activity
             // Unknown record type - log and skip
             spdlog::debug("Unknown record tag: 0x{:02X} at position {}",
                           static_cast<uint8_t>(tag), reader.position() - 1);
+
+            // Look up expected length from header info
+            auto it = record_lengths.find(tag);
+            if (it != record_lengths.end())
+            {
+                uint16_t length = it->second;
+                if (length == 0xFFFF)
+                {
+                    length = reader.readU16();
+                    reader.skip(length); // In this case length includes only the remaining data
+                }
+                else
+                {
+                    reader.skip(length - 1); // -1 for already read tag byte
+                }
+            }
+            else
+            {
+                throw ActivityParseError("Unknown record tag with no length info: 0x" +
+                                         std::to_string(static_cast<uint8_t>(tag)));
+            }
+
             return nullptr;
         }
     }

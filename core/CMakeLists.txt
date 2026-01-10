@@ -1,6 +1,6 @@
-# ---------------------------------------------------------
+# =========================================================
 # Library definition
-# ---------------------------------------------------------
+# =========================================================
 
 add_library(tomtom_core STATIC
     src/watch.cpp
@@ -18,40 +18,32 @@ add_library(tomtom_core STATIC
     src/services/preferences/preferences_parser.cpp
     src/services/preferences/preferences_serializer.cpp
     src/services/preferences/preferences_service.cpp
-    src/services/tracking/tracking_service.cpp
-    src/services/routes/route_service.cpp
-    src/services/manifest/manifest_parser.cpp
-    src/services/manifest/manifest_service.cpp
-    src/services/workouts/workouts_parser.cpp
-    src/services/workouts/workouts_service.cpp
     src/services/gps_quickfix/gps_quickfix_service.cpp
-    src/utils/http_utils.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
 
-# ---------------------------------------------------------
+# =========================================================
 # Include directories
-# ---------------------------------------------------------
+# =========================================================
 target_include_directories(tomtom_core
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-
     $<INSTALL_INTERFACE:include>
 )
 
-# ---------------------------------------------------------
+# =========================================================
 # Compiler setup
-# ---------------------------------------------------------
+# =========================================================
 target_compile_features(tomtom_core PUBLIC cxx_std_17)
 set_target_properties(tomtom_core PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     CXX_EXTENSIONS OFF
 )
 
-# ---------------------------------------------------------
+# =========================================================
 # Optional logging support (spdlog is fetched in root)
-# ---------------------------------------------------------
+# =========================================================
 target_link_libraries(tomtom_core
     PRIVATE spdlog::spdlog
 )
@@ -59,9 +51,6 @@ target_compile_definitions(tomtom_core PRIVATE
     ENABLE_LOGGING
     SPDLOG_HEADER_ONLY
 )
-
-# Note: Protobuf integration will be completed when proto files are generated
-# See core/proto/README.md for instructions on generating C++ code from .proto files
 
 # Platform-specific sources
 if(UNIX AND NOT APPLE)
