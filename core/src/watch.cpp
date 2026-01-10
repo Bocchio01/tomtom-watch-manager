@@ -19,9 +19,17 @@ namespace tomtom
         }
 
         packet_handler_ = std::make_shared<protocol::runtime::PacketHandler>(connection);
-        file_service_ = std::make_unique<protocol::services::FileService>(packet_handler_);
-        info_service_ = std::make_unique<protocol::services::WatchInfoService>(packet_handler_);
-        control_service_ = std::make_unique<protocol::services::WatchControlService>(packet_handler_);
+        file_service_ = std::make_shared<services::FileService>(packet_handler_);
+        info_service_ = std::make_unique<services::WatchInfoService>(packet_handler_);
+        control_service_ = std::make_shared<services::WatchControlService>(packet_handler_);
+
+        // Initialize domain-specific services
+        activity_service_ = std::make_unique<services::activity::ActivityService>(file_service_);
+        preferences_service_ = std::make_unique<services::preferences::PreferencesService>(file_service_);
+        tracking_service_ = std::make_unique<services::tracking::TrackingService>(file_service_);
+        route_service_ = std::make_unique<services::routes::RouteService>(file_service_);
+        manifest_service_ = std::make_unique<services::manifest::ManifestService>(*file_service_);
+        gps_quickfix_service_ = std::make_unique<services::gps_quickfix::GpsQuickFixService>(file_service_, control_service_);
 
         spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})",
                      getProductName(), getProductId(), getSerialNumber());
@@ -47,4 +55,5 @@ namespace tomtom
         }
         return *this;
     }
+
 }

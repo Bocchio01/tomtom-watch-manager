@@ -42,7 +42,7 @@ TEST(test_list_files)
 
 TEST(test_read_files)
 {
-    protocol::definition::FileId test_file_id(0x00F20000);
+    services::FileId test_file_id(0x00F20000);
     auto data = watch->files().readFile(test_file_id);
     spdlog::info("Read {} bytes from file ID 0x{:08X}", data.size(), test_file_id.value);
 

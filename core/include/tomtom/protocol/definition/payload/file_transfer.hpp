@@ -21,7 +21,7 @@ namespace tomtom::protocol::definition
      */
     struct ReadFileDataTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
         uint32_t length;
     };
 
@@ -41,7 +41,7 @@ namespace tomtom::protocol::definition
      */
     struct ReadFileDataRxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
         uint32_t read_length;
         // uint8_t data[];
     };
@@ -66,7 +66,7 @@ namespace tomtom::protocol::definition
      */
     struct WriteFileDataTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
         // uint8_t data[];
     };
 
@@ -83,7 +83,7 @@ namespace tomtom::protocol::definition
     struct WriteFileDataRxPayload
     {
         uint32_t reserved_1;
-        FileId file_id;
+        uint32_t file_id;
         uint32_t reserved_2;
         uint32_t reserved_3;
         uint32_t reserved_4;

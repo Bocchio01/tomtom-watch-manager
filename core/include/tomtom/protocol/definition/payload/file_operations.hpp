@@ -18,7 +18,7 @@ namespace tomtom::protocol::definition
      */
     struct OpenFileReadTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
     };
 
     template <>
@@ -48,7 +48,7 @@ namespace tomtom::protocol::definition
      */
     struct OpenFileWriteTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
     };
 
     template <>
@@ -78,7 +78,7 @@ namespace tomtom::protocol::definition
      */
     struct CloseFileTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
     };
 
     template <>
@@ -108,7 +108,7 @@ namespace tomtom::protocol::definition
      */
     struct DeleteFileTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
     };
 
     template <>
@@ -138,7 +138,7 @@ namespace tomtom::protocol::definition
      */
     struct GetFileSizeTxPayload
     {
-        FileId file_id;
+        uint32_t file_id;
     };
 
     template <>

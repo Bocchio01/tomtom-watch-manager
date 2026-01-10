@@ -9,7 +9,7 @@ option(BUILD_CLI "Build CLI client" OFF)
 option(BUILD_GUI "Build GUI client" OFF)
 
 option(BUILD_TESTS "Build test executables" ON)
-option(BUILD_EXAMPLES "Build example executables" OFF)
+option(BUILD_EXAMPLES "Build example executables" ON)
 
 option(GENERATE_DOCS "Generate documentation with Doxygen" OFF)
 

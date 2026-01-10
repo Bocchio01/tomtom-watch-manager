@@ -8,21 +8,6 @@ namespace tomtom::protocol::definition
 {
 
     /**
-     * @brief Strong type for file identifiers
-     */
-    struct FileId
-    {
-        uint32_t value;
-
-        constexpr FileId() : value(0) {}
-        constexpr explicit FileId(uint32_t v) : value(v) {}
-
-        constexpr bool operator==(const FileId &other) const { return value == other.value; }
-        constexpr bool operator!=(const FileId &other) const { return value != other.value; }
-        constexpr operator uint32_t() const { return value; }
-    };
-
-    /**
      * @brief Standard response structure for file operations
      *
      * @details
@@ -34,7 +19,7 @@ namespace tomtom::protocol::definition
     struct FileOperationResponse
     {
         uint32_t reserved_1;
-        FileId file_id;
+        uint32_t file_id;
         uint32_t reserved_2;
         uint32_t reserved_3;
         uint32_t error;
@@ -50,7 +35,7 @@ namespace tomtom::protocol::definition
     struct FileSizeResponse
     {
         uint32_t reserved_1;
-        FileId file_id;
+        uint32_t file_id;
         uint32_t reserved_2;
         uint32_t file_size;
         uint32_t error;
@@ -64,7 +49,7 @@ namespace tomtom::protocol::definition
     struct FindResponse
     {
         uint32_t reserved_1;
-        FileId file_id;
+        uint32_t file_id;
         uint32_t reserved_2;
         uint32_t file_size;
         uint32_t end_of_list;

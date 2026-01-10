@@ -8,22 +8,24 @@ add_library(tomtom_core STATIC
     src/transport/connection.cpp
     src/transport/connection_factory.cpp
     src/transport/usb/usb_connection.cpp
-    src/protocol/services/file_service.cpp
-    src/protocol/services/watch_control_service.cpp
-    src/protocol/services/watch_info_service.cpp
 
-    # File domain services
-    src/files/activity/activity_parser.cpp
-    src/files/activity/activity_service.cpp
-    src/files/preferences/preferences_parser.cpp
-    src/files/preferences/preferences_serializer.cpp
-    src/files/preferences/preferences_service.cpp
-    src/files/tracking/tracking_service.cpp
-    src/files/routes/route_service.cpp
-    src/files/manifest/manifest_parser.cpp
-    src/files/manifest/manifest_service.cpp
-    src/files/workouts/workouts_parser.cpp
-    src/files/workouts/workouts_service.cpp
+    # Watch services
+    src/services/file_service.cpp
+    src/services/watch_control_service.cpp
+    src/services/watch_info_service.cpp
+    src/services/activity/activity_parser.cpp
+    src/services/activity/activity_service.cpp
+    src/services/preferences/preferences_parser.cpp
+    src/services/preferences/preferences_serializer.cpp
+    src/services/preferences/preferences_service.cpp
+    src/services/tracking/tracking_service.cpp
+    src/services/routes/route_service.cpp
+    src/services/manifest/manifest_parser.cpp
+    src/services/manifest/manifest_service.cpp
+    src/services/workouts/workouts_parser.cpp
+    src/services/workouts/workouts_service.cpp
+    src/services/gps_quickfix/gps_quickfix_service.cpp
+    src/utils/http_utils.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
@@ -68,8 +70,9 @@ if(UNIX AND NOT APPLE)
     )
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
-    target_link_libraries(tomtom_core PUBLIC ${LIBUSB_LIBRARIES})
-    target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS})
+    pkg_check_modules(CURL REQUIRED libcurl)
+    target_link_libraries(tomtom_core PUBLIC ${LIBUSB_LIBRARIES} ${CURL_LIBRARIES})
+    target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
 elseif(WIN32)
     target_sources(tomtom_core PRIVATE
         src/transport/usb/usb_connection_windows.cpp
@@ -78,7 +81,7 @@ elseif(WIN32)
         UNICODE
         _UNICODE
     )
-    target_link_libraries(tomtom_core PUBLIC setupapi winusb hid)
+    target_link_libraries(tomtom_core PUBLIC setupapi winusb hid winhttp)
 
 elseif(APPLE)
     target_sources(tomtom_core PRIVATE
@@ -86,5 +89,6 @@ elseif(APPLE)
     )
     find_library(IOKIT_LIBRARY IOKit REQUIRED)
     find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-    target_link_libraries(tomtom_core PUBLIC ${IOKIT_LIBRARY} ${COREFOUNDATION_LIBRARY})
+    find_package(CURL REQUIRED)
+    target_link_libraries(tomtom_core PUBLIC ${IOKIT_LIBRARY} ${COREFOUNDATION_LIBRARY} CURL::libcurl)
 endif()

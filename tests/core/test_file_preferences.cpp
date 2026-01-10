@@ -2,11 +2,11 @@
 // preferences_test.cpp - Unit tests for preferences domain
 // ============================================================================
 
-#include "tomtom/files/preferences/preferences.hpp"
-#include "tomtom/protocol/services/file_service.hpp"
+#include "tomtom/services/preferences/preferences.hpp"
+#include "tomtom/services/file_service.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"
 #include "tomtom/transport/connection.hpp"
-#include "tomtom/files/file_ids.hpp"
+#include "tomtom/services/file_ids.hpp"
 #include "tomtom/manager.hpp"
 #include "../test_utils.hpp"
 
@@ -17,9 +17,9 @@
 #include <stdexcept>
 
 using namespace tomtom;
-using namespace tomtom::files::preferences;
-using namespace tomtom::files::preferences::models;
-using namespace tomtom::protocol::services;
+using namespace tomtom::services::preferences;
+using namespace tomtom::services::preferences::models;
+using namespace tomtom::services;
 using namespace tomtom::protocol::definition;
 using namespace tomtom::protocol::runtime;
 
@@ -39,7 +39,7 @@ const std::string SAMPLE_PREFERENCES_XML = R"(<?xml version="1.0" encoding="UTF-
   <version>1.0</version>
   <modified>1234567890</modified>
   <name>My TomTom Watch</name>
-  <config_url>https://config.tomtom.com</config_url>
+  <ephemeris_url>https://config.tomtom.com</ephemeris_url>
   <auth_token>sample_auth_token_12345</auth_token>
   <token_secret>sample_secret_67890</token_secret>
   <user_id>user123</user_id>
@@ -164,7 +164,7 @@ TEST(test_parse_valid_xml_succeeds)
     ASSERT_EQ(expected_time, prefs.modified, "Modified timestamp should match");
 
     ASSERT_EQ("My TomTom Watch", prefs.watch_name, "Watch name should match");
-    ASSERT_EQ("https://config.tomtom.com", prefs.config_url, "Config URL should match");
+    ASSERT_EQ("https://config.tomtom.com", prefs.ephemeris_url, "Config URL should match");
 
     ASSERT_TRUE(prefs.auth_token.has_value(), "Auth token should be present");
     ASSERT_EQ("sample_auth_token_12345", *prefs.auth_token, "Auth token should match");
@@ -229,7 +229,7 @@ TEST(test_serialize_basic_preferences)
     prefs.version = "1.0";
     prefs.modified = std::chrono::system_clock::time_point{std::chrono::seconds{1234567890}};
     prefs.watch_name = "Test Watch";
-    prefs.config_url = "https://test.com";
+    prefs.ephemeris_url = "https://test.com";
 
     auto xml = serializer.serializeToString(prefs);
 
@@ -237,7 +237,7 @@ TEST(test_serialize_basic_preferences)
     ASSERT_TRUE(stringContains(xml, "<preferences>"), "Should contain preferences tag");
     ASSERT_TRUE(stringContains(xml, "<version>1.0</version>"), "Should contain version");
     ASSERT_TRUE(stringContains(xml, "<name>Test Watch</name>"), "Should contain watch name");
-    ASSERT_TRUE(stringContains(xml, "<config_url>https://test.com</config_url>"), "Should contain config URL");
+    ASSERT_TRUE(stringContains(xml, "<ephemeris_url>https://test.com</ephemeris_url>"), "Should contain config URL");
 }
 
 TEST(test_serialize_with_authentication)
@@ -299,7 +299,7 @@ TEST(test_round_trip_preserves_data)
     original.version = "1.0";
     original.modified = std::chrono::system_clock::time_point{std::chrono::seconds{1234567890}};
     original.watch_name = "Round Trip Test";
-    original.config_url = "https://test.com";
+    original.ephemeris_url = "https://test.com";
     original.auth_token = "token123";
     original.token_secret = "secret456";
     original.language = "en_US";
@@ -311,7 +311,7 @@ TEST(test_round_trip_preserves_data)
 
     ASSERT_EQ(original.version, parsed.version, "Version should match");
     ASSERT_EQ(original.watch_name, parsed.watch_name, "Watch name should match");
-    ASSERT_EQ(original.config_url, parsed.config_url, "Config URL should match");
+    ASSERT_EQ(original.ephemeris_url, parsed.ephemeris_url, "Config URL should match");
     ASSERT_EQ(*original.auth_token, *parsed.auth_token, "Auth token should match");
     ASSERT_EQ(*original.token_secret, *parsed.token_secret, "Token secret should match");
     ASSERT_EQ(*original.language, *parsed.language, "Language should match");
@@ -398,7 +398,7 @@ TEST(test_complete_workflow)
     original.version = "1.0";
     original.modified = std::chrono::system_clock::now();
     original.watch_name = "Integration Test Watch";
-    original.config_url = "https://test.com";
+    original.ephemeris_url = "https://test.com";
     original.auth_token = "test_token";
     original.token_secret = "test_secret";
     original.user_id = "test_user";
@@ -415,7 +415,7 @@ TEST(test_complete_workflow)
 
     // Verify round-trip
     ASSERT_EQ(original.watch_name, parsed.watch_name, "Watch name should match");
-    ASSERT_EQ(original.config_url, parsed.config_url, "Config URL should match");
+    ASSERT_EQ(original.ephemeris_url, parsed.ephemeris_url, "Config URL should match");
     ASSERT_EQ(*original.auth_token, *parsed.auth_token, "Auth token should match");
     ASSERT_EQ(*original.token_secret, *parsed.token_secret, "Token secret should match");
     ASSERT_EQ(*original.user_id, *parsed.user_id, "User ID should match");
