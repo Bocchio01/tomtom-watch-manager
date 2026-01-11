@@ -285,19 +285,22 @@ namespace tomtom::services::activity
                           static_cast<uint8_t>(tag), reader.position() - 1);
 
             // Look up expected length from header info
-            auto it = record_lengths.find(tag);
-            if (it != record_lengths.end())
+            if (record_length > 0)
             {
-                uint16_t length = it->second;
-                if (length == 0xFFFF)
+                if (record_length == 0xFFFF)
                 {
-                    length = reader.readU16();
+                    uint16_t length = reader.readU16();
                     reader.skip(length); // In this case length includes only the remaining data
                 }
                 else
                 {
-                    reader.skip(length - 1); // -1 for already read tag byte
+                    reader.skip(record_length - 1); // -1 for already read tag byte
                 }
+            }
+            else if (record_length == 0)
+            {
+                // Skip to the end of the file
+                reader.seek(reader.size());
             }
             else
             {

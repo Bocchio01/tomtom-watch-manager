@@ -18,6 +18,20 @@ extern "C"
 #include "tomtom/transport/usb/usb_connection.hpp"
 #include "tomtom/transport/usb/usb_connection_impl.hpp"
 
+namespace
+{
+    // Helper function to convert wide string to narrow string on Windows
+    std::string wstring_to_string(const std::wstring &wstr)
+    {
+        if (wstr.empty())
+            return std::string();
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), nullptr, 0, nullptr, nullptr);
+        std::string str(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), &str[0], size_needed, nullptr, nullptr);
+        return str;
+    }
+}
+
 namespace tomtom::transport
 {
     USBDeviceConnection::Impl::Impl(const DeviceInfo &info)
@@ -302,20 +316,17 @@ namespace tomtom::transport
                             wchar_t buffer[256] = {0};
                             if (HidD_GetManufacturerString(hDevice, buffer, sizeof(buffer)))
                             {
-                                std::wstring wStr(buffer);
-                                info.manufacturer = std::string(wStr.begin(), wStr.end());
+                                info.manufacturer = wstring_to_string(std::wstring(buffer));
                             }
 
                             if (HidD_GetProductString(hDevice, buffer, sizeof(buffer)))
                             {
-                                std::wstring wStr(buffer);
-                                info.product_name = std::string(wStr.begin(), wStr.end());
+                                info.product_name = wstring_to_string(std::wstring(buffer));
                             }
 
                             if (HidD_GetSerialNumberString(hDevice, buffer, sizeof(buffer)))
                             {
-                                std::wstring wStr(buffer);
-                                info.serial_number = std::string(wStr.begin(), wStr.end());
+                                info.serial_number = wstring_to_string(std::wstring(buffer));
                             }
 
                             devices.push_back(info);

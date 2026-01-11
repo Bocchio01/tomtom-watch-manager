@@ -23,7 +23,7 @@ namespace tomtom::transport
         int read(uint8_t *buffer, size_t size, int timeout_ms) override;
         int write(const uint8_t *buffer, size_t size, int timeout_ms) override;
 
-        const DeviceInfo &deviceInfo() const;
+        const DeviceInfo &deviceInfo() const override;
         static std::vector<DeviceInfo> enumerate();
 
     private:

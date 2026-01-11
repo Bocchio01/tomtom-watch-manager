@@ -16,12 +16,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen graphviz cmake ninja-build
-          sudo apt-get install -y libusb-1.0-0-dev pkg-config
-
 
       - name: Configure CMake
         run: |
-          cmake -S . -B build -G Ninja -DGENERATE_DOCS=ON
+          cmake -S . -B build -G Ninja \
+          -DBUILD_CORE=OFF \
+          -DBUILD_SDK=OFF \
+          -DBUILD_CLI=OFF \
+          -DBUILD_GUI=OFF \
+          -DBUILD_TESTS=OFF \
+          -DBUILD_EXAMPLES=OFF \
+          -DGENERATE_DOCS=ON
+
 
       - name: Build documentation target
         run: cmake --build build --target docs --config Release -j 4

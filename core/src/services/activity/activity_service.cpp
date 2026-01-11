@@ -22,7 +22,7 @@ namespace tomtom::services::activity
             {
                 auto data = file_service_->readFile(file.id);
                 auto activity = parser_.parse(data);
-                activities.push_back(activity);
+                activities.push_back(std::move(activity));
             }
             catch (const std::exception &e)
             {

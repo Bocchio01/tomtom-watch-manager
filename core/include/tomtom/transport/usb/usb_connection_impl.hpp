@@ -30,18 +30,36 @@ namespace tomtom::transport
         const DeviceInfo &deviceInfo() const;
         static std::vector<DeviceInfo> enumerate();
 
+        // Public members for callback access (macOS)
+        std::vector<uint8_t> cached_report_;
+        size_t cached_offset_ = 0;
+        bool has_pending_data_ = false;
+
     private:
         DeviceInfo device_info_;
         bool is_open_ = false;
 
 #ifdef _WIN32
         // Windows specific members
-        // stored as void* to avoid including windows.h in the header
         void *device_handle_ = (void *)-1; // INVALID_HANDLE_VALUE
         uint16_t input_report_len_ = 0;
         uint16_t output_report_len_ = 0;
-        std::vector<uint8_t> cached_report_;
-        size_t cached_offset_ = 0;
+
+#elif __APPLE__
+        // macOS specific members
+        void *device_handle_ = nullptr; // IOHIDDeviceRef
+        void *hid_manager_ = nullptr;   // IOHIDManagerRef
+        uint16_t input_report_len_ = 0;
+        uint16_t output_report_len_ = 0;
+
+#else
+        // Unix/Linux specific members (libusb)
+        void *device_handle_ = nullptr;  // libusb_device_handle*
+        uint8_t input_endpoint_ = 0x81;  // Default IN endpoint
+        uint8_t output_endpoint_ = 0x01; // Default OUT endpoint
+        uint16_t input_report_len_ = 64;
+        uint16_t output_report_len_ = 64;
+        bool attach_kernel_driver_ = false;
 
 #endif
     };

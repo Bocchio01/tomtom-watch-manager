@@ -41,6 +41,15 @@ namespace tomtom::services::activity::models
         uint32_t duration_seconds;
         float distance_meters;
         uint16_t calories;
+
+        // Move semantics (unique_ptr is move-only)
+        Activity() = default;
+        Activity(Activity &&) = default;
+        Activity &operator=(Activity &&) = default;
+
+        // Delete copy operations (unique_ptr cannot be copied)
+        Activity(const Activity &) = delete;
+        Activity &operator=(const Activity &) = delete;
     };
 
 }

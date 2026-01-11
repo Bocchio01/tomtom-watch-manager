@@ -177,7 +177,7 @@ namespace tomtom::services::files
         {
             return getFileSize(file_id) > 0;
         }
-        catch (const std::exception &e)
+        catch (const std::exception &)
         {
             return false;
         }

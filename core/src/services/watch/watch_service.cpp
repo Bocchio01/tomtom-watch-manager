@@ -67,7 +67,17 @@ namespace tomtom::services::watch
         uint32_t raw_time = response.packet.payload.time;
         std::time_t time = static_cast<std::time_t>(TT_BIGENDIAN(raw_time));
 
-        spdlog::debug("Watch time: {}", std::asctime(std::gmtime(&time)));
+        std::tm *tm_ptr = std::gmtime(&time);
+        char time_buffer[26];
+        if (tm_ptr)
+        {
+#ifdef _WIN32
+            asctime_s(time_buffer, sizeof(time_buffer), tm_ptr);
+#else
+            asctime_r(tm_ptr, time_buffer);
+#endif
+            spdlog::debug("Watch time: {}", time_buffer);
+        }
         return time;
     }
 

@@ -56,9 +56,9 @@ if(UNIX AND NOT APPLE)
     )
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
-    pkg_check_modules(CURL REQUIRED libcurl)
-    target_link_libraries(tomtom_core PUBLIC ${LIBUSB_LIBRARIES} ${CURL_LIBRARIES})
-    target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
+    find_package(CURL REQUIRED)
+    target_link_libraries(tomtom_core PUBLIC ${LIBUSB_LIBRARIES} CURL::libcurl)
+    target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS})
 elseif(WIN32)
     target_sources(tomtom_core PRIVATE
         src/transport/usb/usb_connection_windows.cpp
