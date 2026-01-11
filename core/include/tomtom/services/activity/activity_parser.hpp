@@ -1,13 +1,14 @@
 #pragma once
 
-#include "activity_models.hpp"
-#include "../../utils/binary_reader.hpp"
-
 #include <map>
 #include <cstdint>
 #include <vector>
 #include <memory>
 #include <stdexcept>
+
+#include "tomtom/utils/binary_reader.hpp"
+
+#include "activity_models.hpp"
 
 namespace tomtom::services::activity
 {
@@ -48,4 +49,4 @@ namespace tomtom::services::activity
         void validateHeader(const models::Activity &activity);
     };
 
-} // namespace tomtom::services::activity
+}

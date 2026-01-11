@@ -4,6 +4,8 @@
 #include "tomtom/protocol/definition/protocol.hpp"
 #include "tomtom/manager.hpp"
 #include "tomtom/watch.hpp"
+#include "tomtom/services/files/files.hpp"
+
 #include "../test_utils.hpp"
 
 using namespace tomtom;
@@ -20,13 +22,13 @@ auto watch = manager.connectToWatch();
 
 TEST(test_get_time)
 {
-    auto time = watch->info().getTime();
+    auto time = watch->watch().getTime();
     spdlog::info("Watch time (Unix timestamp): {}", std::asctime(std::gmtime(&time)));
 }
 
 TEST(test_get_firmware_version)
 {
-    auto version = watch->info().getFirmwareVersion();
+    auto version = watch->watch().getFirmwareVersion();
     spdlog::info("Firmware version: {}", version);
 }
 
@@ -42,7 +44,7 @@ TEST(test_list_files)
 
 TEST(test_read_files)
 {
-    services::FileId test_file_id(0x00F20000);
+    services::files::FileId test_file_id(0x00F20000);
     auto data = watch->files().readFile(test_file_id);
     spdlog::info("Read {} bytes from file ID 0x{:08X}", data.size(), test_file_id.value);
 

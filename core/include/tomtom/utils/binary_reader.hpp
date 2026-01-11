@@ -306,4 +306,4 @@ namespace tomtom::utils
         }
     };
 
-} // namespace tomtom::services::common
+}

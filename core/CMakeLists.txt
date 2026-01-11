@@ -8,17 +8,14 @@ add_library(tomtom_core STATIC
     src/transport/connection.cpp
     src/transport/connection_factory.cpp
     src/transport/usb/usb_connection.cpp
-
-    # Watch services
-    src/services/file_service.cpp
-    src/services/watch_control_service.cpp
-    src/services/watch_info_service.cpp
-    src/services/activity/activity_parser.cpp
-    src/services/activity/activity_service.cpp
+    src/services/files/file_service.cpp
+    src/services/watch/watch_service.cpp
     src/services/preferences/preferences_parser.cpp
     src/services/preferences/preferences_serializer.cpp
     src/services/preferences/preferences_service.cpp
     src/services/gps_quickfix/gps_quickfix_service.cpp
+    src/services/activity/activity_parser.cpp
+    src/services/activity/activity_service.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)

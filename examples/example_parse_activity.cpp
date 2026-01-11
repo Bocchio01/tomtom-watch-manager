@@ -4,12 +4,12 @@
 #include <spdlog/spdlog.h>
 
 #include "tomtom/manager.hpp"
-#include "tomtom/services/file_ids.hpp"
-#include "tomtom/sdk/activity_converter.hpp"
+#include "tomtom/services/files/files.hpp"
+#include "tomtom/sdk/activity_exporter.hpp"
 
 using namespace tomtom;
 
-int main(int argc, char *argv[])
+int main()
 {
     spdlog::set_level(spdlog::level::off);
 
@@ -32,25 +32,24 @@ int main(int argc, char *argv[])
         auto activities = watch->activities().list();
         std::cout << "Found " << activities.size() << " activities on the watch.\n";
 
-        for (const auto &info : activities)
+        for (size_t i = 0; i < activities.size(); i++)
         {
+            const auto &activity = activities[i];
+
             std::cout << "-------------------------------------------\n";
-            std::cout << "Activity Index: " << info.index << "\n";
-            std::cout << "File ID      : 0x" << std::hex << std::uppercase
-                      << std::setw(8) << std::setfill('0') << info.file_id.value << std::dec << "\n";
-            std::cout << "Type         : " << static_cast<int>(info.type) << "\n";
-            std::cout << "Start Time   : " << std::asctime(std::gmtime(&info.start_time));
-            std::cout << "Duration     : " << info.getDurationString() << "\n";
-            std::cout << "Distance     : " << info.getDistanceKm() << " km\n";
-            std::cout << "File Size    : " << info.file_size << " bytes\n";
+            std::cout << "Activity Index: " << i << "\n";
+            std::cout << "Type         : " << services::activity::toString(activity.type) << "\n";
+            std::cout << "Start Time   : " << std::asctime(std::gmtime(&activity.start_time));
+            std::cout << "Duration     : " << activity.duration_seconds / 60 << " minutes\n";
+            std::cout << "Distance     : " << activity.distance_meters / 1000.0 << " km\n";
+            std::cout << "Records      : " << activity.records.size() << "\n";
 
-            // Load full activity data
-            auto activity = watch->activities().get(info.index);
-            std::cout << "  Loaded activity with " << activity.records.size() << " records.\n";
+            // Use the new SDK exporter to convert to GPX
+            auto gpx_data = tomtom::sdk::ActivityExporter::exportFile(
+                activity,
+                sdk::ActivityExporter::Format::GPX);
 
-            // Use the new lib layer converter
-            auto gpx_data = tomtom::sdk::ActivityConverter::toGPX(activity);
-            std::string gpx_filename = "activity_" + std::to_string(info.index) + ".gpx";
+            std::string gpx_filename = "activity_" + std::to_string(i) + ".gpx";
             std::ofstream gpx_file(gpx_filename);
             gpx_file << gpx_data;
             gpx_file.close();

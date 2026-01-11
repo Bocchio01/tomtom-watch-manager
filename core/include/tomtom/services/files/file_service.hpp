@@ -4,11 +4,12 @@
 #include <vector>
 #include <cstdint>
 
-#include "tomtom/services/file_ids.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"
 #include "tomtom/protocol/definition/protocol.hpp"
 
-namespace tomtom::services
+#include "file_ids.hpp"
+
+namespace tomtom::services::files
 {
     /**
      * @brief File opening mode.
@@ -76,6 +77,13 @@ namespace tomtom::services
          * @throws std::runtime_error if the operation fails.
          */
         uint32_t getFileSize(FileId file_id);
+
+        /**
+         * @brief Checks if a file exists on the watch.
+         * @param file_id The ID of the file to check.
+         * @return true if the file exists, false otherwise.
+         */
+        bool fileExists(FileId file_id);
 
     private:
         /**

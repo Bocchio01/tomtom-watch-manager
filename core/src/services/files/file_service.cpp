@@ -1,12 +1,11 @@
-#include "tomtom/services/file_service.hpp"
-
-#include <spdlog/spdlog.h>
 #include <algorithm>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 
 #include "tomtom/defines.hpp"
+#include "tomtom/services/files/files.hpp"
 
-namespace tomtom::services
+namespace tomtom::services::files
 {
     FileService::FileService(std::shared_ptr<protocol::runtime::PacketHandler> packet_handler)
         : packet_handler_(std::move(packet_handler))
@@ -29,7 +28,7 @@ namespace tomtom::services
 
         if (!end_of_list)
         {
-            services::FileId id;
+            FileId id;
             id.value = TT_BIGENDIAN(find_first_response.packet.payload.file_id);
             files.push_back({id, find_first_response.packet.payload.file_size});
         }
@@ -43,7 +42,7 @@ namespace tomtom::services
 
             if (!end_of_list)
             {
-                services::FileId id;
+                FileId id;
                 id.value = TT_BIGENDIAN(find_next_response.packet.payload.file_id);
                 files.push_back({id, find_next_response.packet.payload.file_size});
             }
@@ -53,7 +52,7 @@ namespace tomtom::services
         return files;
     }
 
-    std::vector<uint8_t> FileService::readFile(services::FileId file_id)
+    std::vector<uint8_t> FileService::readFile(FileId file_id)
     {
         spdlog::debug("Reading file with ID: 0x{:08X}", file_id.value);
 
@@ -82,7 +81,7 @@ namespace tomtom::services
         while (!done)
         {
             protocol::definition::ReadFileDataTx read_request;
-            read_request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+            read_request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
             read_request.payload.length = chunk_size;
 
             auto read_response = packet_handler_->transaction<protocol::definition::ReadFileDataTx, protocol::definition::ReadFileDataRx>(read_request);
@@ -111,7 +110,7 @@ namespace tomtom::services
         return data;
     }
 
-    void FileService::writeFile(services::FileId file_id, const std::vector<uint8_t> &data)
+    void FileService::writeFile(FileId file_id, const std::vector<uint8_t> &data)
     {
         spdlog::debug("Writing {} bytes to file ID: 0x{:08X}", data.size(), file_id.value);
 
@@ -126,7 +125,7 @@ namespace tomtom::services
             size_t chunk_size = std::min(remaining, MAX_CHUNK_SIZE);
 
             protocol::definition::WriteFileDataTx write_request;
-            write_request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+            write_request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
 
             std::vector<uint8_t> chunk_data(
                 data.begin() + total_written,
@@ -142,10 +141,10 @@ namespace tomtom::services
         spdlog::debug("Wrote {} bytes to file 0x{:08X}", data.size(), file_id.value);
     }
 
-    void FileService::deleteFile(services::FileId file_id)
+    void FileService::deleteFile(FileId file_id)
     {
         protocol::definition::DeleteFileTx request;
-        request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+        request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
 
         auto response = packet_handler_->transaction<protocol::definition::DeleteFileTx, protocol::definition::DeleteFileRx>(request);
 
@@ -157,10 +156,10 @@ namespace tomtom::services
         spdlog::debug("Deleted file 0x{:08X}", file_id.value);
     }
 
-    uint32_t FileService::getFileSize(services::FileId file_id)
+    uint32_t FileService::getFileSize(FileId file_id)
     {
         protocol::definition::GetFileSizeTx request;
-        request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+        request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
 
         auto response = packet_handler_->transaction<protocol::definition::GetFileSizeTx, protocol::definition::GetFileSizeRx>(request);
 
@@ -172,14 +171,24 @@ namespace tomtom::services
         return TT_BIGENDIAN(response.packet.payload.file_size);
     }
 
-    // Private helper methods
+    bool FileService::fileExists(FileId file_id)
+    {
+        try
+        {
+            return getFileSize(file_id) > 0;
+        }
+        catch (const std::exception &e)
+        {
+            return false;
+        }
+    }
 
-    void FileService::openFile(services::FileId file_id, FileOpenMode mode)
+    void FileService::openFile(FileId file_id, FileOpenMode mode)
     {
         if (mode == FileOpenMode::Read)
         {
             protocol::definition::OpenFileReadTx open_request;
-            open_request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+            open_request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
             auto open_response = packet_handler_->transaction<protocol::definition::OpenFileReadTx, protocol::definition::OpenFileReadRx>(open_request);
 
             if (open_response.packet.payload.error != static_cast<uint32_t>(protocol::definition::ProtocolError::SUCCESS))
@@ -190,7 +199,7 @@ namespace tomtom::services
         else // FileOpenMode::Write
         {
             protocol::definition::OpenFileWriteTx open_request;
-            open_request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+            open_request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
             auto open_response = packet_handler_->transaction<protocol::definition::OpenFileWriteTx, protocol::definition::OpenFileWriteRx>(open_request);
 
             if (open_response.packet.payload.error != static_cast<uint32_t>(protocol::definition::ProtocolError::SUCCESS))
@@ -200,10 +209,10 @@ namespace tomtom::services
         }
     }
 
-    void FileService::closeFile(services::FileId file_id, bool check_error)
+    void FileService::closeFile(FileId file_id, bool check_error)
     {
         protocol::definition::CloseFileTx close_request;
-        close_request.payload.file_id = (services::FileId)TT_BIGENDIAN(file_id);
+        close_request.payload.file_id = (FileId)TT_BIGENDIAN(file_id);
         auto close_response = packet_handler_->transaction<protocol::definition::CloseFileTx, protocol::definition::CloseFileRx>(close_request);
 
         if (check_error && close_response.packet.payload.error != static_cast<uint32_t>(protocol::definition::ProtocolError::SUCCESS))

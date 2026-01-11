@@ -1,6 +1,6 @@
 #pragma once
 
-#include "activity_converter.hpp"
+#include "activity_exporter.hpp"
 #include <tomtom/watch.hpp>
 #include <filesystem>
 #include <functional>
@@ -10,16 +10,10 @@ namespace tomtom::sdk
 {
 
     /**
-     * @brief High-level activity management and orchestration
+     * @brief Simplified activity manager for downloading and managing activities
      *
-     * This class bridges the gap between the device-level core library
-     * and the user-facing application. It handles:
-     * - Downloading activities from the watch
-     * - Converting to various formats (GPX/TCX/CSV)
-     * - Saving to the local filesystem
-     * - Managing local activity files
-     *
-     * This is shared logic used by both CLI and GUI applications.
+     * Handles the filesystem and batch operations for activities.
+     * Downloads from watch, saves .ttbin files, and optionally exports to GPX/TCX/CSV.
      */
     class ActivityManager
     {
@@ -33,106 +27,91 @@ namespace tomtom::sdk
         using ProgressCallback = std::function<void(size_t current, size_t total, const std::string &message)>;
 
         /**
+         * @brief Activity summary for listing
+         */
+        struct ActivitySummary
+        {
+            uint16_t index;
+            std::string type;
+            std::time_t start_time;
+            uint32_t duration_seconds;
+            float distance_meters;
+            uint16_t calories;
+        };
+
+        /**
          * @brief Construct activity manager
          * @param watch Connected watch instance
-         * @param storage_dir Directory for storing activities
          */
-        ActivityManager(
-            std::shared_ptr<tomtom::Watch> watch,
-            const std::filesystem::path &storage_dir);
+        explicit ActivityManager(std::shared_ptr<tomtom::Watch> watch);
 
         // ====================================================================
-        // Download & Export Operations
+        // Download Operations
         // ====================================================================
 
         /**
-         * @brief Download activity and save to disk
-         * @param index Activity index on watch
-         * @param format Export format (GPX, TCX, CSV)
-         * @param progress Optional progress callback
-         * @return Path to saved file
-         *
-         * This method:
-         * 1. Downloads the activity from the watch
-         * 2. Converts it to the requested format
-         * 3. Saves it to the storage directory
-         */
-        std::filesystem::path downloadAndSave(
-            uint16_t index,
-            ExportFormat format,
-            ProgressCallback progress = nullptr);
-
-        /**
-         * @brief Download all activities from watch
-         * @param format Export format
+         * @brief Download new activities from watch, save .ttbin, and export
+         * @param destination Directory to save files
+         * @param export_formats Vector of formats to export (empty = no export)
          * @param progress Optional progress callback
          * @return Number of activities downloaded
+         *
+         * Note: Currently exports only to specified formats (GPX/TCX/CSV).
+         * Raw .ttbin saving to be added in future update.
          */
-        size_t downloadAll(
-            ExportFormat format,
+        size_t downloadNewActivities(
+            const std::filesystem::path &destination,
+            const std::vector<ActivityExporter::Format> &export_formats = {},
             ProgressCallback progress = nullptr);
 
         /**
-         * @brief Convert existing activity file to different format
-         * @param source_path Path to source activity file
-         * @param target_format Target format
-         * @return Path to converted file
-         *
-         * Note: Source must be a .ttbin file (raw watch format)
+         * @brief Download specific activity by index
+         * @param index Activity index on watch
+         * @param destination Directory to save file
+         * @param export_formats Vector of formats to export
+         * @param progress Optional progress callback
+         * @return Paths to saved files
          */
-        std::filesystem::path convertFile(
-            const std::filesystem::path &source_path,
-            ExportFormat target_format);
+        std::vector<std::filesystem::path> downloadActivity(
+            uint16_t index,
+            const std::filesystem::path &destination,
+            const std::vector<ActivityExporter::Format> &export_formats = {},
+            ProgressCallback progress = nullptr);
 
         // ====================================================================
-        // Local File Management
-        // ====================================================================
-
-        /**
-         * @brief List activities in local storage directory
-         * @return Vector of file paths
-         */
-        std::vector<std::filesystem::path> listLocal() const;
-
-        /**
-         * @brief Get storage directory
-         * @return Storage directory path
-         */
-        std::filesystem::path getStorageDir() const { return storage_dir_; }
-
-        /**
-         * @brief Set storage directory
-         * @param dir New storage directory
-         */
-        void setStorageDir(const std::filesystem::path &dir);
-
-        // ====================================================================
-        // Watch Operations (passthrough)
+        // List Operations
         // ====================================================================
 
         /**
-         * @brief Get count of activities on watch
-         * @return Number of activities
+         * @brief List activities currently on the watch
+         * @return Vector of activity summaries
          */
-        size_t getWatchActivityCount() const;
+        std::vector<ActivitySummary> listWatchFiles();
 
         /**
-         * @brief List activities on watch
-         * @return Activity metadata
+         * @brief List local activity files in a directory
+         * @param dir Directory to scan
+         * @return Vector of file paths (all activity-related files)
          */
-        std::vector<tomtom::services::activity::models::ActivityInfo> listOnWatch() const;
+        std::vector<std::filesystem::path> listLocalFiles(const std::filesystem::path &dir);
+
+        // ====================================================================
+        // Delete Operations
+        // ====================================================================
+
+        /**
+         * @brief Clear all activities from watch
+         * @return Number of activities deleted
+         */
+        size_t clearWatchHistory();
 
     private:
         std::shared_ptr<tomtom::Watch> watch_;
-        std::filesystem::path storage_dir_;
 
-        // Helper to generate filename for activity
+        // Helper to generate filename from activity
         std::string generateFilename(
             const tomtom::services::activity::models::Activity &activity,
-            ExportFormat format) const;
-
-        // Helper to ensure storage directory exists
-        void ensureStorageDir();
+            const std::string &extension) const;
     };
 
 } // namespace tomtom::sdk

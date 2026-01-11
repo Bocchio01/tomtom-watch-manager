@@ -3,14 +3,11 @@
 # ============================================================================
 add_library(tomtom_sdk
 
-    # Activity management
-    src/activity_converter.cpp
+    src/activity_exporter.cpp
     src/activity_manager.cpp
-
-    # GPS QuickFix management
-    src/quickfix_manager.cpp
-
-    # Utilities
+    src/gps_manager.cpp
+    src/settings_manager.cpp
+    src/sync_service.cpp
     src/networking/http_client.cpp
 )
 
@@ -34,7 +31,7 @@ target_include_directories(tomtom_sdk
 # Link against core library
 target_link_libraries(tomtom_sdk
     PUBLIC
-    tomtom_core # Public because we expose core types in our API
+    TomTomWatch::core # Public because we expose core types in our API
     PRIVATE
     spdlog::spdlog
 )

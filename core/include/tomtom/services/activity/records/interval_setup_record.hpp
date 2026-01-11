@@ -48,4 +48,4 @@ namespace tomtom::services::activity::records
         size_t recordSize() const override { return sizeof(IntervalSetupRecordData); }
     };
 
-} // namespace tomtom::services::activity::records
+}

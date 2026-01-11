@@ -43,4 +43,4 @@ namespace tomtom::services::activity::records
         size_t recordSize() const override { return sizeof(RaceSetupRecordData); }
     };
 
-} // namespace tomtom::services::activity::records
+}

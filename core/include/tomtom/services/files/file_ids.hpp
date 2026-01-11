@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tomtom/protocol/definition/payload/common.hpp"
+#include <cstdint>
 
-namespace tomtom::services
+namespace tomtom::services::files
 {
 
     /**
@@ -238,4 +238,4 @@ namespace tomtom::services
                id.value == ranges::TRACKING_TEMP;
     }
 
-} // namespace tomtom::services
+}

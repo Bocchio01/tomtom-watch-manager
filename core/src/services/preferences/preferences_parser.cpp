@@ -12,6 +12,12 @@ namespace tomtom::services::preferences
     // Simple XML parsing helper functions
     namespace
     {
+        /**
+         * @brief Extract text content of a given XML tag
+         * @param xml XML string
+         * @param tag Tag name
+         * @return Text content, or empty string if not found
+         */
         std::string extractText(const std::string &xml, const std::string &tag)
         {
             std::string open_tag = "<" + tag + ">";
@@ -61,10 +67,10 @@ namespace tomtom::services::preferences
     {
         // Convert to string
         std::string xml_string(xml_data.begin(), xml_data.end());
-        return parseString(xml_string);
+        return parse(xml_string);
     }
 
-    models::Preferences PreferencesParser::parseString(const std::string &xml_string)
+    models::Preferences PreferencesParser::parse(const std::string &xml_string)
     {
         models::Preferences prefs;
 
@@ -122,4 +128,4 @@ namespace tomtom::services::preferences
         return prefs;
     }
 
-} // namespace tomtom::services::preferences
+}

@@ -45,39 +45,6 @@ namespace tomtom::services::preferences::models
         // ====================================================================
         std::optional<std::string> language; // Display language
         std::optional<std::string> units;    // Metric/Imperial
-
-        // ====================================================================
-        // Convenience Methods
-        // ====================================================================
-
-        /**
-         * @brief Check if authentication credentials are present
-         */
-        bool hasAuthentication() const
-        {
-            return auth_token.has_value() &&
-                   token_secret.has_value() &&
-                   !auth_token->empty() &&
-                   !token_secret->empty();
-        }
-
-        /**
-         * @brief Check if watch has a custom name
-         */
-        bool hasCustomName() const
-        {
-            return !watch_name.empty();
-        }
-
-        /**
-         * @brief Clear authentication credentials
-         */
-        void clearAuthentication()
-        {
-            auth_token.reset();
-            token_secret.reset();
-            user_id.reset();
-        }
     };
 
-} // namespace tomtom::services::preferences::models
+}

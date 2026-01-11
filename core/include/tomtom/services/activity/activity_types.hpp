@@ -33,7 +33,6 @@ namespace tomtom::services::activity
      * @brief Record tag enumeration
      *
      * Identifies the type of record in the activity file.
-     * See PDF specification pages 11-30 for details.
      */
     enum class RecordTag : uint8_t
     {
@@ -316,4 +315,4 @@ namespace tomtom::services::activity
         }
     }
 
-} // namespace tomtom::services::activity
+}

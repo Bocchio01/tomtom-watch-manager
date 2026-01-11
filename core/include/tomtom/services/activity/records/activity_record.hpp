@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../activity_types.hpp"
 #include <memory>
+
+#include "../activity_types.hpp"
 
 namespace tomtom::services::activity::records
 {
@@ -35,4 +36,4 @@ namespace tomtom::services::activity::records
         virtual size_t recordSize() const = 0;
     };
 
-} // namespace tomtom::services::activity::records
+}

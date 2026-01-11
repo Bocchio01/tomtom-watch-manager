@@ -1,13 +1,12 @@
-#include "tomtom/services/watch_info_service.hpp"
-
-#include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 
 #include "tomtom/defines.hpp"
+#include "tomtom/services/watch/watch_service.hpp"
 
-namespace tomtom::services
+namespace tomtom::services::watch
 {
-    WatchInfoService::WatchInfoService(std::shared_ptr<protocol::runtime::PacketHandler> packet_handler)
+    WatchService::WatchService(std::shared_ptr<protocol::runtime::PacketHandler> packet_handler)
         : packet_handler_(std::move(packet_handler))
     {
         if (!packet_handler_)
@@ -16,7 +15,49 @@ namespace tomtom::services
         }
     }
 
-    std::time_t WatchInfoService::getTime()
+    void WatchService::formatWatch()
+    {
+        spdlog::warn("Formatting watch - this will erase all user data!");
+
+        protocol::definition::FormatWatchTx request;
+        auto response = packet_handler_->transaction<protocol::definition::FormatWatchTx, protocol::definition::FormatWatchRx>(request);
+
+        if (response.packet.payload.error != protocol::definition::ProtocolError::SUCCESS)
+        {
+            throw std::runtime_error("Failed to format watch (Error: " +
+                                     std::to_string(static_cast<uint32_t>(response.packet.payload.error)) + ")");
+        }
+
+        spdlog::info("Watch formatted successfully");
+    }
+
+    void WatchService::resetDevice()
+    {
+        spdlog::info("Sending device reset command...");
+
+        protocol::definition::ResetDeviceTx request;
+        // Note: Device typically does not send a response as it immediately resets
+        packet_handler_->send(request);
+
+        spdlog::info("Reset command sent - watch will reboot");
+    }
+
+    std::string WatchService::resetGpsProcessor()
+    {
+        spdlog::info("Resetting GPS processor...");
+
+        protocol::definition::ResetGpsTx request;
+        auto response = packet_handler_->transaction<protocol::definition::ResetGpsTx, protocol::definition::ResetGpsRx>(request);
+
+        std::string message(
+            reinterpret_cast<const char *>(response.raw_payload_bytes.data()),
+            response.raw_payload_bytes.size());
+
+        spdlog::info("GPS processor reset complete: {}", message);
+        return message;
+    }
+
+    std::time_t WatchService::getTime()
     {
         spdlog::debug("Requesting time from watch...");
 
@@ -30,7 +71,7 @@ namespace tomtom::services
         return time;
     }
 
-    std::string WatchInfoService::getFirmwareVersion()
+    std::string WatchService::getFirmwareVersion()
     {
         spdlog::debug("Requesting firmware version from watch...");
 
@@ -45,7 +86,7 @@ namespace tomtom::services
         return version;
     }
 
-    std::string WatchInfoService::getBleVersion()
+    std::string WatchService::getBleVersion()
     {
         spdlog::debug("Requesting BLE version from watch...");
 
@@ -60,7 +101,7 @@ namespace tomtom::services
         return version;
     }
 
-    uint32_t WatchInfoService::getProductId()
+    uint32_t WatchService::getProductId()
     {
         spdlog::debug("Requesting product ID from watch...");
 

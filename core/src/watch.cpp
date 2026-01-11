@@ -6,30 +6,26 @@
 
 namespace tomtom
 {
-    Watch::Watch(std::shared_ptr<transport::DeviceConnection> conn) : connection(std::move(conn))
+    Watch::Watch(std::shared_ptr<transport::DeviceConnection> connection)
+        : connection_(std::move(connection))
     {
-        if (!connection)
+        if (!connection_)
         {
             throw std::invalid_argument("Connection cannot be null");
         }
 
-        if (!connection->open())
+        if (!connection_->open())
         {
             throw std::runtime_error("Failed to open connection to the watch");
         }
 
-        packet_handler_ = std::make_shared<protocol::runtime::PacketHandler>(connection);
-        file_service_ = std::make_shared<services::FileService>(packet_handler_);
-        info_service_ = std::make_unique<services::WatchInfoService>(packet_handler_);
-        control_service_ = std::make_shared<services::WatchControlService>(packet_handler_);
+        packet_handler_ = std::make_shared<protocol::runtime::PacketHandler>(connection_);
+        file_service_ = std::make_shared<services::files::FileService>(packet_handler_);
+        watch_service_ = std::make_shared<services::watch::WatchService>(packet_handler_);
 
-        // Initialize domain-specific services
-        activity_service_ = std::make_unique<services::activity::ActivityService>(file_service_);
-        preferences_service_ = std::make_unique<services::preferences::PreferencesService>(file_service_);
-        // tracking_service_ = std::make_unique<services::tracking::TrackingService>(file_service_);  // TODO: Not yet implemented
-        // route_service_ = std::make_unique<services::routes::RouteService>(file_service_);          // TODO: Not yet implemented
-        // manifest_service_ = std::make_unique<services::manifest::ManifestService>(*file_service_); // TODO: Not yet implemented
-        gps_quickfix_service_ = std::make_unique<services::gps_quickfix::GpsQuickFixService>(file_service_, control_service_);
+        activity_service_ = std::make_shared<services::activity::ActivityService>(file_service_);
+        preferences_service_ = std::make_shared<services::preferences::PreferencesService>(file_service_);
+        gps_quickfix_service_ = std::make_shared<services::gps_quickfix::GpsQuickFixService>(file_service_, watch_service_, preferences_service_);
 
         spdlog::info("Connected to watch: {} (Product ID: 0x{:04X}, Serial: {})",
                      getProductName(), getProductId(), getSerialNumber());
@@ -37,13 +33,13 @@ namespace tomtom
 
     Watch::~Watch()
     {
-        if (connection && connection->isOpen())
+        if (connection_ && connection_->isOpen())
         {
-            connection->close();
+            connection_->close();
         }
     }
 
-    Watch::Watch(Watch &&other) noexcept : connection(std::move(other.connection))
+    Watch::Watch(Watch &&other) noexcept : connection_(std::move(other.connection_))
     {
     }
 
@@ -51,7 +47,7 @@ namespace tomtom
     {
         if (this != &other)
         {
-            connection = std::move(other.connection);
+            connection_ = std::move(other.connection_);
         }
         return *this;
     }

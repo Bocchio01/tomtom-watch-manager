@@ -1,31 +1,37 @@
-
-#include "tomtom/services/gps_quickfix/gps_quickfix_service.hpp"
-#include "tomtom/services/file_ids.hpp"
-#include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
+
+#include "tomtom/services/files/files.hpp"
+#include "tomtom/services/watch/watch_service.hpp"
+#include "tomtom/services/preferences/preferences.hpp"
+#include "tomtom/services/gps_quickfix/gps_quickfix_service.hpp"
 
 namespace tomtom::services::gps_quickfix
 {
 
     GpsQuickFixService::GpsQuickFixService(
-        std::shared_ptr<services::FileService> file_service,
-        std::shared_ptr<services::WatchControlService> control_service)
+        std::shared_ptr<services::files::FileService> file_service,
+        std::shared_ptr<services::watch::WatchService> watch_service,
+        std::shared_ptr<services::preferences::PreferencesService> preferences_service)
         : file_service_(std::move(file_service)),
-          control_service_(std::move(control_service))
+          watch_service_(std::move(watch_service)),
+          preferences_service_(std::move(preferences_service))
     {
         if (!file_service_)
         {
             throw std::invalid_argument("FileService cannot be null");
         }
-        if (!control_service_)
+        if (!watch_service_)
         {
-            throw std::invalid_argument("WatchControlService cannot be null");
+            throw std::invalid_argument("WatchService cannot be null");
+        }
+        if (!preferences_service_)
+        {
+            throw std::invalid_argument("PreferencesService cannot be null");
         }
     }
 
-    void GpsQuickFixService::updateEphemeris(
-        const std::vector<uint8_t> &data,
-        bool reset_gps)
+    void GpsQuickFixService::updateEphemeris(const std::vector<uint8_t> &data)
     {
         if (data.empty())
         {
@@ -37,24 +43,24 @@ namespace tomtom::services::gps_quickfix
         try
         {
             // Write the data to the GPS QuickFix file
-            file_service_->writeFile(GPS_QUICKFIX, data);
-            spdlog::info("GPS QuickFix data successfully written to watch");
+            // file_service_->writeFile(files::GPS_QUICKFIX, data);
 
-            // Reset GPS processor if requested
-            if (reset_gps)
-            {
-                spdlog::info("Resetting GPS processor...");
-                std::string reset_msg = control_service_->resetGpsProcessor();
-                spdlog::debug("GPS reset response: {}", reset_msg);
-            }
+            // Reset GPS processor
+            std::string reset_msg = watch_service_->resetGpsProcessor();
+            spdlog::debug("GPS reset response: {}", reset_msg);
 
-            spdlog::info("GPS QuickFix update completed successfully");
+            // Update ephemeris modified timestamp in XML file
+            preferences_service_->set(
+                [prefs = preferences_service_->get()]() mutable
+                {
+                    prefs.ephemeris_modified = std::chrono::system_clock::from_time_t(std::time(nullptr));
+                    return prefs;
+                }());
         }
         catch (const std::exception &e)
         {
-            spdlog::error("Failed to update GPS QuickFix data: {}", e.what());
             throw std::runtime_error(std::string("GPS QuickFix update failed: ") + e.what());
         }
     }
 
-} // namespace tomtom::services::gps_quickfix
+}

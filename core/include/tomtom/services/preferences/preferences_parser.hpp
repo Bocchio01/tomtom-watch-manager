@@ -1,9 +1,10 @@
 #pragma once
 
-#include "preferences_model.hpp"
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
+
+#include "preferences_model.hpp"
 
 namespace tomtom::services::preferences
 {
@@ -42,7 +43,7 @@ namespace tomtom::services::preferences
          * @return Parsed preferences structure
          * @throws PreferencesParseError if parsing fails
          */
-        models::Preferences parseString(const std::string &xml_string);
+        models::Preferences parse(const std::string &xml_string);
     };
 
-} // namespace tomtom::services::preferences
+}

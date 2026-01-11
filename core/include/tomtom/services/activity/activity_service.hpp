@@ -1,12 +1,13 @@
 #pragma once
 
-#include "activity_models.hpp"
-#include "activity_parser.hpp"
-#include "tomtom/services/file_service.hpp"
-
 #include <memory>
 #include <vector>
 #include <string>
+
+#include "tomtom/services/files/files.hpp"
+
+#include "activity_models.hpp"
+#include "activity_parser.hpp"
 
 namespace tomtom::services::activity
 {
@@ -24,18 +25,13 @@ namespace tomtom::services::activity
          * @brief Construct activity service
          * @param file_service Low-level file service for watch communication
          */
-        explicit ActivityService(
-            std::shared_ptr<services::FileService> file_service);
-
-        // ====================================================================
-        // Activity Listing and Retrieval
-        // ====================================================================
+        explicit ActivityService(std::shared_ptr<services::files::FileService> file_service);
 
         /**
          * @brief List all activities on the watch
          * @return Vector of activity metadata (lightweight info)
          */
-        std::vector<models::ActivityInfo> list();
+        std::vector<models::Activity> list();
 
         /**
          * @brief Get full activity data by index
@@ -49,17 +45,13 @@ namespace tomtom::services::activity
          * @param file_id The file ID
          * @return Parsed activity with all records
          */
-        models::Activity get(FileId file_id);
+        models::Activity get(files::FileId file_id);
 
         /**
          * @brief Get activity count
          * @return Number of activities on watch
          */
         size_t count();
-
-        // ====================================================================
-        // Activity Management
-        // ====================================================================
 
         /**
          * @brief Delete an activity by index
@@ -71,23 +63,13 @@ namespace tomtom::services::activity
          * @brief Delete an activity by file ID
          * @param file_id File ID
          */
-        void remove(FileId file_id);
+        void remove(files::FileId file_id);
 
         /**
          * @brief Delete all activities
          * @return Number of activities deleted
          */
         size_t removeAll();
-
-        // ====================================================================
-        // Utility Functions
-        // ====================================================================
-
-        /**
-         * @brief Get the next available activity file ID
-         * @return File ID for next activity
-         */
-        FileId getNextActivityFileId();
 
         /**
          * @brief Check if an activity exists
@@ -101,16 +83,17 @@ namespace tomtom::services::activity
          * @param file_id File ID
          * @return true if activity exists
          */
-        bool exists(FileId file_id);
+        bool exists(files::FileId file_id);
 
     private:
-        std::shared_ptr<services::FileService> file_service_;
+        std::shared_ptr<services::files::FileService> file_service_;
+        ActivityParser parser_;
 
-        // Helper to convert index to FileId
-        FileId indexToFileId(uint16_t index) const;
-
-        // Helper to build metadata from activity file
-        models::ActivityInfo buildActivityInfo(FileId file_id, const std::vector<uint8_t> &data);
+        /**
+         * @brief List all activity file IDs on the watch
+         * @return Vector of file IDs
+         */
+        std::vector<files::FileEntry> listActivityFiles();
     };
 
-} // namespace tomtom::services::activity
+}

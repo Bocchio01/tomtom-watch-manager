@@ -1,6 +1,7 @@
+#include <spdlog/spdlog.h>
 
 #include "tomtom/services/activity/activity_parser.hpp"
-#include <spdlog/spdlog.h>
+#include "tomtom/services/activity/records.hpp"
 
 namespace tomtom::services::activity
 {
@@ -308,4 +309,4 @@ namespace tomtom::services::activity
         }
     }
 
-} // namespace tomtom::services::activity
+}

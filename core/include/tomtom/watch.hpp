@@ -13,18 +13,13 @@
 #include "tomtom/transport/connection.hpp"
 #include "tomtom/protocol/definition/protocol.hpp"
 #include "tomtom/protocol/runtime/packet_handler.hpp"
-#include "tomtom/defines.hpp"
 
-// Domain-specific file services
-#include "tomtom/services/file_service.hpp"
-#include "tomtom/services/watch_info_service.hpp"
-#include "tomtom/services/watch_control_service.hpp"
-#include "tomtom/services/activity/activity.hpp"
+// Services
+#include "tomtom/services/files/files.hpp"
+#include "tomtom/services/watch/watch_service.hpp"
 #include "tomtom/services/preferences/preferences.hpp"
-#include "tomtom/services/gps_quickfix/gps_quickfix_service.hpp"
-// #include "tomtom/services/tracking/tracking.hpp"  // TODO: Not yet implemented
-// #include "tomtom/services/routes/routes.hpp"     // TODO: Not yet implemented
-// #include "tomtom/services/manifest/manifest.hpp" // TODO: Not yet implemented
+#include "tomtom/services/gps_quickfix/gps_quickfix.hpp"
+#include "tomtom/services/activity/activity.hpp"
 
 namespace tomtom
 {
@@ -33,19 +28,15 @@ namespace tomtom
      */
     class Watch
     {
-    public:
-        std::shared_ptr<transport::DeviceConnection> connection;
-
     private:
+        std::shared_ptr<transport::DeviceConnection> connection_;
         std::shared_ptr<protocol::runtime::PacketHandler> packet_handler_;
-        std::shared_ptr<services::FileService> file_service_;
-        std::unique_ptr<services::WatchInfoService> info_service_;
-        std::shared_ptr<services::WatchControlService> control_service_;
 
-        // Domain-specific services
-        std::unique_ptr<services::activity::ActivityService> activity_service_;
-        std::unique_ptr<services::preferences::PreferencesService> preferences_service_;
-        std::unique_ptr<services::gps_quickfix::GpsQuickFixService> gps_quickfix_service_;
+        std::shared_ptr<services::files::FileService> file_service_;
+        std::shared_ptr<services::watch::WatchService> watch_service_;
+        std::shared_ptr<services::activity::ActivityService> activity_service_;
+        std::shared_ptr<services::preferences::PreferencesService> preferences_service_;
+        std::shared_ptr<services::gps_quickfix::GpsQuickFixService> gps_quickfix_service_;
 
     public:
         /**
@@ -66,32 +57,24 @@ namespace tomtom
         Watch &operator=(Watch &&) noexcept;
 
         // Getters for watch properties
-        uint16_t getVendorId() const { return static_cast<uint16_t>(connection->deviceInfo().vendor_id); }
-        uint16_t getProductId() const { return static_cast<uint16_t>(connection->deviceInfo().product_id); }
-        std::string_view getProductName() const { return connection->deviceInfo().product_name; }
-        std::string_view getManufacturer() const { return connection->deviceInfo().manufacturer; }
-        std::string_view getSerialNumber() const { return connection->deviceInfo().serial_number; }
-
-        // Service accessors
-        /**
-         * @brief Get the FileService for file operations.
-         * @return Reference to the FileService object.
-         */
-        services::FileService &files() { return *file_service_; }
+        uint16_t getVendorId() const { return static_cast<uint16_t>(connection_->deviceInfo().vendor_id); }
+        uint16_t getProductId() const { return static_cast<uint16_t>(connection_->deviceInfo().product_id); }
+        std::string_view getProductName() const { return connection_->deviceInfo().product_name; }
+        std::string_view getManufacturer() const { return connection_->deviceInfo().manufacturer; }
+        std::string_view getSerialNumber() const { return connection_->deviceInfo().serial_number; }
 
         /**
-         * @brief Get the WatchInfoService for information queries.
-         * @return Reference to the WatchInfoService object.
+         * @brief Access low-level file operations
+         * @return Reference to FileService
          */
-        services::WatchInfoService &info() { return *info_service_; }
+        services::files::FileService &files() { return *file_service_; }
 
         /**
-         * @brief Get the WatchControlService for control operations.
-         * @return Reference to the WatchControlService object.
+         * @brief Access watch control and info operations
+         * @return Reference to WatchService
          */
-        services::WatchControlService &control() { return *control_service_; }
+        services::watch::WatchService &watch() { return *watch_service_; }
 
-        // Domain-specific service accessors
         /**
          * @brief Access activity-related operations (workouts, GPS data, etc.)
          * @return Reference to ActivityService

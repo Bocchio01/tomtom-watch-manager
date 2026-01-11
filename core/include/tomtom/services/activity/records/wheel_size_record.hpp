@@ -45,4 +45,4 @@ namespace tomtom::services::activity::records
         }
     };
 
-} // namespace tomtom::services::activity::records
+}

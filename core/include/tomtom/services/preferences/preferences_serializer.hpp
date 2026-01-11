@@ -23,13 +23,6 @@ namespace tomtom::services::preferences
          */
         std::vector<uint8_t> serialize(const models::Preferences &prefs);
 
-        /**
-         * @brief Serialize preferences to XML string
-         * @param prefs Preferences structure
-         * @return XML string
-         */
-        std::string serializeToString(const models::Preferences &prefs);
-
     private:
         /**
          * @brief Build XML string from preferences
@@ -37,4 +30,4 @@ namespace tomtom::services::preferences
         std::string buildXML(const models::Preferences &prefs);
     };
 
-} // namespace tomtom::services::preferences
+}

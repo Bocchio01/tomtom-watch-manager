@@ -1,10 +1,11 @@
 #pragma once
 
-#include "tomtom/services/file_service.hpp"
-#include "tomtom/services/watch_control_service.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "tomtom/services/files/files.hpp"
+#include "tomtom/services/watch/watch_service.hpp"
+#include "tomtom/services/preferences/preferences.hpp"
 
 namespace tomtom::services::gps_quickfix
 {
@@ -25,26 +26,21 @@ namespace tomtom::services::gps_quickfix
          * @param control_service Watch control service for GPS reset
          */
         explicit GpsQuickFixService(
-            std::shared_ptr<services::FileService> file_service,
-            std::shared_ptr<services::WatchControlService> control_service);
-
-        // ====================================================================
-        // Update Operations
-        // ====================================================================
+            std::shared_ptr<services::files::FileService> file_service,
+            std::shared_ptr<services::watch::WatchService> watch_service,
+            std::shared_ptr<services::preferences::PreferencesService> preferences_service);
 
         /**
          * @brief Update GPS QuickFix data from raw ephemeris data
          * @param data Ephemeris data bytes
-         * @param reset_gps Whether to reset GPS processor after update
          * @throws std::runtime_error if update fails
          */
-        void updateEphemeris(
-            const std::vector<uint8_t> &data,
-            bool reset_gps = true);
+        void updateEphemeris(const std::vector<uint8_t> &data);
 
     private:
-        std::shared_ptr<services::FileService> file_service_;
-        std::shared_ptr<services::WatchControlService> control_service_;
+        std::shared_ptr<services::files::FileService> file_service_;
+        std::shared_ptr<services::watch::WatchService> watch_service_;
+        std::shared_ptr<services::preferences::PreferencesService> preferences_service_;
     };
 
-} // namespace tomtom::services::gps_quickfix
+}

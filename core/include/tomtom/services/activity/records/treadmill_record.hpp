@@ -44,4 +44,4 @@ namespace tomtom::services::activity::records
         size_t recordSize() const override { return sizeof(TreadmillRecordData); }
     };
 
-} // namespace tomtom::services::activity::records
+}

@@ -42,4 +42,4 @@ namespace tomtom::services::activity::records
         size_t recordSize() const override { return sizeof(FitnessPointRecordData); }
     };
 
-} // namespace tomtom::services::activity::records
+}
