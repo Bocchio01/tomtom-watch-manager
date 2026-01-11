@@ -1,8 +1,8 @@
-#include "tomtom/transport/device_info.hpp"
-#include "tomtom/transport/usb/usb_connection.hpp"
-#include "tomtom/transport/usb/usb_connection_impl.hpp"
+#include "tomtom/core/transport/device_info.hpp"
+#include "tomtom/core/transport/usb/usb_connection.hpp"
+#include "tomtom/core/transport/usb/usb_connection_impl.hpp"
 
-namespace tomtom::transport
+namespace tomtom::core::transport
 {
     USBDeviceConnection::USBDeviceConnection(const DeviceInfo &info)
         : impl_(std::make_unique<Impl>(info))

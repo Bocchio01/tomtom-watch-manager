@@ -3,11 +3,11 @@
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
-#include "tomtom/defines.hpp"
-#include "tomtom/transport/usb/usb_connection.hpp"
-#include "tomtom/transport/usb/usb_connection_impl.hpp"
+#include "tomtom/core/defines.hpp"
+#include "tomtom/core/transport/usb/usb_connection.hpp"
+#include "tomtom/core/transport/usb/usb_connection_impl.hpp"
 
-namespace tomtom::transport
+namespace tomtom::core::transport
 {
     // libusb context - shared across all USB connections
     static libusb_context *g_usb_context = nullptr;

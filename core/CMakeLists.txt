@@ -4,18 +4,13 @@
 
 add_library(tomtom_core STATIC
     src/watch.cpp
-    src/manager.cpp
     src/transport/connection.cpp
     src/transport/connection_factory.cpp
     src/transport/usb/usb_connection.cpp
-    src/services/files/file_service.cpp
-    src/services/watch/watch_service.cpp
-    src/services/preferences/preferences_parser.cpp
-    src/services/preferences/preferences_serializer.cpp
-    src/services/preferences/preferences_service.cpp
-    src/services/gps_quickfix/gps_quickfix_service.cpp
-    src/services/activity/activity_parser.cpp
-    src/services/activity/activity_service.cpp
+
+    # src/transport/ble/ble_connection.cpp
+    src/commands/kernel_operations.cpp
+    src/commands/file_operations.cpp
 )
 
 add_library(TomTomWatch::core ALIAS tomtom_core)
@@ -39,17 +34,8 @@ set_target_properties(tomtom_core PROPERTIES
 )
 
 # =========================================================
-# Optional logging support (spdlog is fetched in root)
+# Platform-specific sources and libraries
 # =========================================================
-target_link_libraries(tomtom_core
-    PRIVATE spdlog::spdlog
-)
-target_compile_definitions(tomtom_core PRIVATE
-    ENABLE_LOGGING
-    SPDLOG_HEADER_ONLY
-)
-
-# Platform-specific sources
 if(UNIX AND NOT APPLE)
     target_sources(tomtom_core PRIVATE
         src/transport/usb/usb_connection_unix.cpp
@@ -59,6 +45,7 @@ if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(tomtom_core PUBLIC ${LIBUSB_LIBRARIES} CURL::libcurl)
     target_include_directories(tomtom_core PUBLIC ${LIBUSB_INCLUDE_DIRS})
+
 elseif(WIN32)
     target_sources(tomtom_core PRIVATE
         src/transport/usb/usb_connection_windows.cpp

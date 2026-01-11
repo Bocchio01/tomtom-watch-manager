@@ -14,9 +14,8 @@ extern "C"
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
-#include "tomtom/defines.hpp"
-#include "tomtom/transport/usb/usb_connection.hpp"
-#include "tomtom/transport/usb/usb_connection_impl.hpp"
+#include "tomtom/core/transport/usb/usb_connection.hpp"
+#include "tomtom/core/transport/usb/usb_connection_impl.hpp"
 
 namespace
 {
@@ -32,7 +31,7 @@ namespace
     }
 }
 
-namespace tomtom::transport
+namespace tomtom::core::transport
 {
     USBDeviceConnection::Impl::Impl(const DeviceInfo &info)
         : device_info_(info),

@@ -1,21 +1,6 @@
-#include "tomtom/transport/connection.hpp"
-#include "tomtom/transport/usb/usb_connection.hpp"
-// #include "tomtom/transport/ble/ble_connection.hpp"
+#include "tomtom/core/transport/connection.hpp"
 
-namespace tomtom::transport
+namespace tomtom::core::transport
 {
-    std::vector<DeviceInfo> DeviceConnection::enumerate()
-    {
-        std::vector<DeviceInfo> all_devices;
 
-        // Enumerate USB devices
-        auto usb_devices = USBDeviceConnection::enumerate();
-        all_devices.insert(all_devices.end(), usb_devices.begin(), usb_devices.end());
-
-        // TODO: Enumerate BLE devices when BLE support is added
-        // auto ble_devices = BLEDeviceConnection::enumerate();
-        // all_devices.insert(all_devices.end(), ble_devices.begin(), ble_devices.end());
-
-        return all_devices;
-    }
 }
