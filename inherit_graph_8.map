@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1FileOperationResponse.html" title="Standard response structure for file operations." alt="" coords="5,98,199,153"/>
+<area shape="rect" id="Node000001" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1CloseFileRxPayload.html" title=" " alt="" coords="250,5,483,45"/>
+<area shape="poly" id="edge6_Node000000_Node000001" title=" " alt="" coords="166,89,246,55,282,43,284,48,248,60,169,94"/>
+<area shape="rect" id="Node000002" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1DeleteFileRxPayload.html" title=" " alt="" coords="247,69,487,109"/>
+<area shape="poly" id="edge7_Node000000_Node000002" title=" " alt="" coords="212,108,246,103,247,108,213,113"/>
+<area shape="rect" id="Node000003" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1OpenFileReadRxPayload.html" title=" " alt="" coords="260,134,473,189"/>
+<area shape="poly" id="edge8_Node000000_Node000003" title=" " alt="" coords="213,138,260,144,259,149,212,143"/>
+<area shape="rect" id="Node000004" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1OpenFileWriteRxPayload.html" title=" " alt="" coords="267,213,466,267"/>
+<area shape="poly" id="edge9_Node000000_Node000004" title=" " alt="" coords="165,157,248,198,280,210,278,215,246,202,162,162"/>
+</map>

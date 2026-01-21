@@ -1,0 +1,7 @@
+<map id="tomtom::core::protocol::runtime::UnexpectedPacketError" name="tomtom::core::protocol::runtime::UnexpectedPacketError">
+<area shape="rect" id="Node000001" title="Thrown when the received packet type does not match the expected type." alt="" coords="5,167,245,207"/>
+<area shape="rect" id="Node000002" href="$classtomtom_1_1core_1_1protocol_1_1runtime_1_1CodecError.html" title="Base class for all codec/transaction related errors." alt="" coords="40,79,211,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="128,133,128,166,123,166,123,133"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="56,5,195,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="128,44,128,79,123,79,123,44"/>
+</map>

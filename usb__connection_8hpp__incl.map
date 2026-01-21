@@ -1,0 +1,21 @@
+<map id="usb_connection.hpp" name="usb_connection.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="77,5,227,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,152,83,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,33,63,142,59,139,141,30"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="107,152,170,177"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="147,32,137,54,128,79,127,110,133,138,127,139,122,110,123,78,132,52,143,30"/>
+<area shape="rect" id="Node000004" href="$connection_8hpp.html" title=" " alt="" coords="137,79,271,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="163,29,190,66,185,69,158,33"/>
+<area shape="rect" id="Node000006" href="$device__info_8hpp.html" title=" " alt="" coords="245,152,371,177"/>
+<area shape="poly" id="edge11_Node000001_Node000006" title=" " alt="" coords="202,28,245,47,266,60,285,77,301,107,309,137,303,138,296,108,281,80,263,64,243,51,200,33"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="179,106,84,149,82,144,177,102"/>
+<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="195,106,160,144,157,140,191,103"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="179,225,245,251"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="207,104,213,211,208,212,202,105"/>
+<area shape="poly" id="edge7_Node000004_Node000006" title=" " alt="" coords="222,102,281,142,278,146,219,106"/>
+<area shape="poly" id="edge9_Node000006_Node000005" title=" " alt="" coords="294,180,240,219,237,215,291,175"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="364,225,423,251"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="323,175,371,214,367,219,320,179"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="271,225,339,251"/>
+<area shape="poly" id="edge10_Node000006_Node000008" title=" " alt="" coords="310,178,309,212,304,212,305,178"/>
+</map>

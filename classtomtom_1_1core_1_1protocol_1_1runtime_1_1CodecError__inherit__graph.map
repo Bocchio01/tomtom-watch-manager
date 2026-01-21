@@ -1,0 +1,13 @@
+<map id="tomtom::core::protocol::runtime::CodecError" name="tomtom::core::protocol::runtime::CodecError">
+<area shape="rect" id="Node000001" title="Base class for all codec/transaction related errors." alt="" coords="192,101,363,141"/>
+<area shape="rect" id="Node000003" href="$classtomtom_1_1core_1_1protocol_1_1runtime_1_1ConnectionError.html" title="Thrown when the underlying connection fails (IO error)" alt="" coords="434,5,627,45"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="326,93,410,55,446,43,448,48,412,60,328,97"/>
+<area shape="rect" id="Node000004" href="$classtomtom_1_1core_1_1protocol_1_1runtime_1_1MalformedPacketError.html" title="Thrown when received data violates protocol rules (e.g., wrong direction, invalid length,..." alt="" coords="414,69,647,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="376,106,413,101,414,107,376,112"/>
+<area shape="rect" id="Node000005" href="$classtomtom_1_1core_1_1protocol_1_1runtime_1_1TimeoutError.html" title="Thrown when a device operation times out." alt="" coords="443,133,618,173"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="377,131,444,140,443,145,376,136"/>
+<area shape="rect" id="Node000006" href="$classtomtom_1_1core_1_1protocol_1_1runtime_1_1UnexpectedPacketError.html" title="Thrown when the received packet type does not match the expected type." alt="" coords="411,197,651,237"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="328,145,412,183,448,195,446,200,410,188,326,150"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,109,144,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,119,192,119,192,124,158,124"/>
+</map>

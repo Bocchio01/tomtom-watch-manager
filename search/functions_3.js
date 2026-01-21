@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['deletefile_0',['deleteFile',['../classtomtom_1_1core_1_1commands_1_1FileOperations.html#a706c0d216d471f713d566ef86cf917dc',1,'tomtom::core::commands::FileOperations']]],
+  ['deviceconnection_1',['deviceconnection',['../classtomtom_1_1core_1_1transport_1_1DeviceConnection.html#a721a0c909a2b9b17b117f966625b8265',1,'tomtom::core::transport::DeviceConnection::DeviceConnection(const DeviceConnection &amp;)=delete'],['../classtomtom_1_1core_1_1transport_1_1DeviceConnection.html#a47c4bfd419bdbb64da0c36465bc671fc',1,'tomtom::core::transport::DeviceConnection::DeviceConnection(DeviceConnection &amp;&amp;)=default'],['../classtomtom_1_1core_1_1transport_1_1DeviceConnection.html#afad68c097cc8e4e16edb7db810b68978',1,'tomtom::core::transport::DeviceConnection::DeviceConnection()=default']]],
+  ['deviceinfo_2',['deviceinfo',['../classtomtom_1_1core_1_1transport_1_1DeviceConnection.html#af1bc4fbf42aa53cadd5bea3337069de6',1,'tomtom::core::transport::DeviceConnection::deviceInfo()'],['../classtomtom_1_1core_1_1transport_1_1USBDeviceConnection.html#abdccb6ee80803b0e7ff59be38df91bb4',1,'tomtom::core::transport::USBDeviceConnection::deviceInfo()'],['../classtomtom_1_1core_1_1transport_1_1USBDeviceConnection_1_1Impl.html#a19101e0d7226a03a3d9b1166b5faa81f',1,'tomtom::core::transport::USBDeviceConnection::Impl::deviceInfo()']]]
+];

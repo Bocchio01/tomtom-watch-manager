@@ -1,0 +1,5 @@
+<map id="tomtom::core::protocol::definitions::Packet&lt; PacketPayload &gt;" name="tomtom::core::protocol::definitions::Packet&lt; PacketPayload &gt;">
+<area shape="rect" id="Node000001" title="Smart Packet structure that auto&#45;fills headers based on PacketPayload traits." alt="" coords="17,108,188,163"/>
+<area shape="rect" id="Node000002" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1PacketHeader.html" title="Common packet header for all messages." alt="" coords="5,5,200,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,59,105,108,100,108,100,59"/>
+</map>

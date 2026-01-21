@@ -1,0 +1,26 @@
+<map id="usb_connection_impl.hpp" name="usb_connection_impl.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="193,5,380,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="102,299,169,324"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="253,33,201,54,145,81,94,110,57,138,30,173,12,226,8,239,11,249,27,267,46,281,90,299,88,304,44,286,23,271,7,252,3,239,6,225,25,171,53,134,92,106,142,76,199,49,251,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="335,225,398,251"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="301,29,321,50,339,77,353,113,361,149,368,211,363,212,356,150,347,114,335,80,317,53,297,33"/>
+<area shape="rect" id="Node000004" href="$device__info_8hpp.html" title=" " alt="" coords="174,225,311,251"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="298,30,317,63,322,83,321,105,310,137,294,167,262,216,258,213,290,164,305,135,316,103,317,84,312,65,294,32"/>
+<area shape="rect" id="Node000007" href="$usb__connection_8hpp.html" title=" " alt="" coords="155,79,306,104"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="279,33,250,69,246,66,275,29"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="227,253,166,293,163,289,224,248"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="202,299,261,324"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="243,251,238,286,233,285,238,251"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="286,299,354,324"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="257,249,299,287,295,291,253,253"/>
+<area shape="poly" id="edge9_Node000007_Node000003" title=" " alt="" coords="243,103,348,214,344,217,240,106"/>
+<area shape="poly" id="edge15_Node000007_Node000004" title=" " alt="" coords="234,104,243,211,238,212,229,105"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="21,225,98,251"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="155,102,129,109,103,119,80,134,62,154,55,167,53,182,55,212,50,212,47,181,50,165,57,150,77,130,101,115,127,104,154,97"/>
+<area shape="rect" id="Node000009" href="$connection_8hpp.html" title=" " alt="" coords="72,152,205,177"/>
+<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="217,106,166,146,162,141,214,102"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="141,178,139,285,133,285,135,178"/>
+<area shape="poly" id="edge13_Node000009_Node000003" title=" " alt="" coords="176,175,323,220,321,225,174,180"/>
+<area shape="poly" id="edge14_Node000009_Node000004" title=" " alt="" coords="157,175,215,215,212,219,154,180"/>
+<area shape="poly" id="edge12_Node000009_Node000008" title=" " alt="" coords="127,179,84,218,81,214,124,175"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="usb_connection.hpp" name="usb_connection.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="254,5,405,31"/>
+<area shape="rect" id="Node000002" href="$connection__factory_8cpp.html" title=" " alt="" coords="5,79,176,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="279,37,130,81,129,76,277,32"/>
+<area shape="rect" id="Node000003" href="$usb__connection_8cpp.html" title=" " alt="" coords="11,152,162,177"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="300,40,189,106,108,154,105,149,187,102,297,36"/>
+<area shape="rect" id="Node000004" href="$usb__connection__impl_8hpp.html" title=" " alt="" coords="301,79,488,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="351,39,386,77,382,80,347,43"/>
+<area shape="rect" id="Node000005" href="$usb__connection__macos_8cpp.html" title=" " alt="" coords="187,152,387,177"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="312,43,301,60,292,79,286,118,288,151,282,152,281,118,287,78,296,58,308,40"/>
+<area shape="rect" id="Node000006" href="$usb__connection__unix_8cpp.html" title=" " alt="" coords="411,152,597,177"/>
+<area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="419,27,465,45,485,59,502,77,511,96,514,116,510,152,505,151,508,117,506,97,498,80,482,63,462,50,417,32"/>
+<area shape="rect" id="Node000007" href="$usb__connection__windows_8cpp.html" title=" " alt="" coords="621,152,835,177"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="385,32,525,76,624,115,704,149,701,154,622,120,523,81,383,37"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="332,110,137,154,136,149,331,104"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="367,114,306,154,303,150,365,109"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="425,109,488,150,485,154,422,114"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="462,104,675,149,673,154,461,109"/>
+</map>

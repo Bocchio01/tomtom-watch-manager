@@ -1,0 +1,5 @@
+<map id="tomtom::core::protocol::definitions::DeleteFileRxPayload" name="tomtom::core::protocol::definitions::DeleteFileRxPayload">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,108,245,148"/>
+<area shape="rect" id="Node000002" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1FileOperationResponse.html" title="Standard response structure for file operations." alt="" coords="29,5,222,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="128,74,128,108,123,108,123,74"/>
+</map>

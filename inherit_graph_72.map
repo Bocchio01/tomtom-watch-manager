@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classtomtom_1_1core_1_1transport_1_1DeviceConnection.html" title="Abstract transport connection." alt="" coords="5,5,183,45"/>
+<area shape="rect" id="Node000001" href="$classtomtom_1_1core_1_1transport_1_1USBDeviceConnection.html" title="USB transport implementation." alt="" coords="231,5,408,45"/>
+<area shape="poly" id="edge13_Node000000_Node000001" title=" " alt="" coords="196,23,231,23,231,28,196,28"/>
+</map>

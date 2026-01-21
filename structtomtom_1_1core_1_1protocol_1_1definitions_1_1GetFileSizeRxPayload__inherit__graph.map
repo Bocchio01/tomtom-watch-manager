@@ -1,0 +1,5 @@
+<map id="tomtom::core::protocol::definitions::GetFileSizeRxPayload" name="tomtom::core::protocol::definitions::GetFileSizeRxPayload">
+<area shape="rect" id="Node000001" title=" " alt="" coords="17,93,213,148"/>
+<area shape="rect" id="Node000002" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1FileSizeResponse.html" title="Response for file size queries." alt="" coords="5,5,224,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,59,117,93,112,93,112,59"/>
+</map>

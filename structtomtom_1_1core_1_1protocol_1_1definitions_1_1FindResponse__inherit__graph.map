@@ -1,0 +1,7 @@
+<map id="tomtom::core::protocol::definitions::FindResponse" name="tomtom::core::protocol::definitions::FindResponse">
+<area shape="rect" id="Node000001" title="Response for find operations (first/next file)" alt="" coords="5,53,201,93"/>
+<area shape="rect" id="Node000002" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1FindFirstFileRxPayload.html" title=" " alt="" coords="259,5,443,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,52,259,45,260,50,216,57"/>
+<area shape="rect" id="Node000003" href="$structtomtom_1_1core_1_1protocol_1_1definitions_1_1FindNextFileRxPayload.html" title=" " alt="" coords="249,84,453,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="215,87,250,93,249,98,215,93"/>
+</map>
