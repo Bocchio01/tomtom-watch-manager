@@ -1,7 +1,5 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
-
 #include "packet_header.hpp"
 #include "payload_traits.hpp"
 
@@ -56,19 +54,6 @@ namespace tomtom::core::protocol::definitions
         constexpr size_t size() const
         {
             return sizeof(PacketHeader) + sizeof(PacketPayload);
-        }
-
-        /**
-         * @brief Print packet information for debugging.
-         */
-        void printInfo() const
-        {
-            spdlog::info("Packet Info:");
-            spdlog::info("  Direction: {}", static_cast<uint8_t>(header.direction));
-            spdlog::info("  Type: {}", static_cast<uint8_t>(header.type));
-            spdlog::info("  Counter: {}", static_cast<uint8_t>(header.counter));
-            spdlog::info("  Length: {}", static_cast<uint8_t>(header.length));
-            spdlog::info("  Total Size: {} bytes", size());
         }
     };
 

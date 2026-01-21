@@ -25,7 +25,7 @@ namespace tomtom::core::commands
      */
     struct FileEntry
     {
-        definitions::FileId id;
+        uint32_t id;
         uint32_t size;
     };
 
@@ -50,7 +50,7 @@ namespace tomtom::core::commands
          * @return A vector containing the raw bytes of the file.
          * @throws std::runtime_error if the file cannot be opened or read.
          */
-        std::vector<uint8_t> readFile(definitions::FileId file_id);
+        std::vector<uint8_t> readFile(uint32_t file_id);
 
         /**
          * @brief Writes data to a specific file on the watch.
@@ -58,14 +58,14 @@ namespace tomtom::core::commands
          * @param data The binary data to write.
          * @throws std::runtime_error if the write operation fails.
          */
-        void writeFile(definitions::FileId file_id, const std::vector<uint8_t> &data);
+        void writeFile(uint32_t file_id, const std::vector<uint8_t> &data);
 
         /**
          * @brief Deletes a file from the watch.
          * @param file_id The ID of the file to delete.
          * @throws std::runtime_error if the delete operation fails.
          */
-        void deleteFile(definitions::FileId file_id);
+        void deleteFile(uint32_t file_id);
 
         /**
          * @brief Gets the size of a specific file.
@@ -73,7 +73,7 @@ namespace tomtom::core::commands
          * @return The size of the file in bytes.
          * @throws std::runtime_error if the operation fails.
          */
-        uint32_t getFileSize(definitions::FileId file_id);
+        uint32_t getFileSize(uint32_t file_id);
 
     private:
         /**
@@ -82,7 +82,7 @@ namespace tomtom::core::commands
          * @param mode The mode to open the file (Read or Write).
          * @throws std::runtime_error if the file cannot be opened.
          */
-        void openFile(definitions::FileId file_id, FileOpenMode mode);
+        void openFile(uint32_t file_id, FileOpenMode mode);
 
         /**
          * @brief Closes an opened file.
@@ -90,7 +90,7 @@ namespace tomtom::core::commands
          * @param check_error If true, throws on error. If false, silently ignores errors.
          * @throws std::runtime_error if check_error is true and the operation fails.
          */
-        void closeFile(definitions::FileId file_id, bool check_error = true);
+        void closeFile(uint32_t file_id, bool check_error = true);
 
         std::shared_ptr<runtime::PacketHandler> packet_handler_;
     };

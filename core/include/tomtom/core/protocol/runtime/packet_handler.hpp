@@ -5,7 +5,6 @@
 #include <cstring>
 #include <sstream>
 #include <iomanip>
-#include <spdlog/spdlog.h>
 
 #include "tomtom/core/transport/connection.hpp"
 #include "tomtom/core/protocol/definitions/definitions.hpp"
@@ -127,12 +126,10 @@ namespace tomtom::core::protocol::runtime
             // Read the header first
             std::vector<uint8_t> header_bytes(sizeof(definitions::PacketHeader));
             connection_->read(header_bytes.data(), header_bytes.size(), 2000);
-            printBytesAsHex(header_bytes.data(), header_bytes.size());
 
             // Read the payload based on length in header
             std::vector<uint8_t> payload_bytes(header_bytes[1] - 2); // Subtract counter(1) + type(1)
             connection_->read(payload_bytes.data(), payload_bytes.size(), 2000);
-            printBytesAsHex(payload_bytes.data(), payload_bytes.size());
 
             // Construct the packet header
             std::memcpy(&response.packet.header, header_bytes.data(), header_bytes.size());
@@ -181,17 +178,17 @@ namespace tomtom::core::protocol::runtime
         std::shared_ptr<transport::DeviceConnection> connection_;
         uint8_t current_counter_ = 0;
 
-        void printBytesAsHex(const uint8_t *data, size_t size)
-        {
-            std::ostringstream oss;
-            oss << std::hex << std::uppercase << std::setfill('0');
-            for (size_t i = 0; i < size; ++i)
-            {
-                oss << std::setw(2) << static_cast<int>(data[i]);
-                if (i + 1 < size)
-                    oss << ' ';
-            }
-            spdlog::debug("Data ({} bytes): {}", size, oss.str());
-        }
+        // void printBytesAsHex(const uint8_t *data, size_t size)
+        // {
+        //     std::ostringstream oss;
+        //     oss << std::hex << std::uppercase << std::setfill('0');
+        //     for (size_t i = 0; i < size; ++i)
+        //     {
+        //         oss << std::setw(2) << static_cast<int>(data[i]);
+        //         if (i + 1 < size)
+        //             oss << ' ';
+        //     }
+        //     spdlog::debug("Data ({} bytes): {}", size, oss.str());
+        // }
     };
 }

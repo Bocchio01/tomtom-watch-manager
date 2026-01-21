@@ -12,7 +12,7 @@ extern "C"
 #include <vector>
 #include <variant>
 #include <algorithm>
-#include <spdlog/spdlog.h>
+#include <cstring>
 
 #include "tomtom/core/transport/usb/usb_connection.hpp"
 #include "tomtom/core/transport/usb/usb_connection_impl.hpp"
@@ -69,7 +69,6 @@ namespace tomtom::core::transport
 
         if (device_handle_ == INVALID_HANDLE_VALUE)
         {
-            spdlog::error("Failed to open device. Error: {}", GetLastError());
             return false;
         }
 
@@ -79,7 +78,6 @@ namespace tomtom::core::transport
 
         if (!HidD_GetAttributes(device_handle_, &attributes))
         {
-            spdlog::error("Failed to get HID attributes. Error: {}", GetLastError());
             CloseHandle(device_handle_);
             device_handle_ = INVALID_HANDLE_VALUE;
             return false;
@@ -94,8 +92,6 @@ namespace tomtom::core::transport
             {
                 input_report_len_ = caps.InputReportByteLength;
                 output_report_len_ = caps.OutputReportByteLength;
-                spdlog::debug("HID Capabilities: InputLen={}, OutputLen={}",
-                              input_report_len_, output_report_len_);
             }
             HidD_FreePreparsedData(preparsedData);
         }
@@ -153,7 +149,6 @@ namespace tomtom::core::transport
 
                 if (!result)
                 {
-                    spdlog::error("HID Read failed. Error: {}", GetLastError());
                     return bytesCopied > 0 ? static_cast<int>(bytesCopied) : -1;
                 }
 
@@ -212,7 +207,6 @@ namespace tomtom::core::transport
 
         if (!result)
         {
-            spdlog::error("HID Write failed. Error: {}", GetLastError());
             return -1;
         }
 
@@ -242,7 +236,6 @@ namespace tomtom::core::transport
 
         if (deviceInfoSet == INVALID_HANDLE_VALUE)
         {
-            spdlog::error("Failed to get device information set. Error: {}", GetLastError());
             return devices;
         }
 
@@ -329,10 +322,6 @@ namespace tomtom::core::transport
                             }
 
                             devices.push_back(info);
-                            spdlog::debug("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Path={}",
-                                          static_cast<uint16_t>(info.vendor_id),
-                                          static_cast<uint16_t>(info.product_id),
-                                          usb_details.device_path);
                         }
                     }
                     CloseHandle(hDevice);

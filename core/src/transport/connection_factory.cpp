@@ -23,10 +23,14 @@ namespace tomtom::core::transport
 
     std::unique_ptr<DeviceConnection> DeviceConnectionFactory::create(const DeviceInfo &info)
     {
+        std::unique_ptr<DeviceConnection> connection;
+
         switch (info.transport)
         {
         case TransportType::USB:
-            return std::make_unique<USBDeviceConnection>(info);
+            connection = std::make_unique<USBDeviceConnection>(info);
+            connection->open();
+            return connection;
 
         case TransportType::BLE:
             //     return std::make_unique<BLEDeviceConnection>(info);

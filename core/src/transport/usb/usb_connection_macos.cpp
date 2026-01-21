@@ -5,7 +5,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <cstring>
 #include <algorithm>
-#include <spdlog/spdlog.h>
 
 #include "tomtom/core/defines.hpp"
 #include "tomtom/core/transport/usb/usb_connection.hpp"

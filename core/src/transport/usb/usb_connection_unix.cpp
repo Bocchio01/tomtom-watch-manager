@@ -1,7 +1,6 @@
 #include <libusb-1.0/libusb.h>
 #include <cstring>
 #include <algorithm>
-#include <spdlog/spdlog.h>
 
 #include "tomtom/core/defines.hpp"
 #include "tomtom/core/transport/usb/usb_connection.hpp"
@@ -21,7 +20,7 @@ namespace tomtom::core::transport
             int result = libusb_init(&g_usb_context);
             if (result != LIBUSB_SUCCESS)
             {
-                spdlog::error("Failed to initialize libusb: {}", libusb_error_name(result));
+                // spdlog::error("Failed to initialize libusb: {}", libusb_error_name(result));
                 return false;
             }
         }
@@ -64,7 +63,7 @@ namespace tomtom::core::transport
 
         if (!g_usb_context)
         {
-            spdlog::error("libusb context not initialized");
+            // spdlog::error("libusb context not initialized");
             return false;
         }
 
@@ -77,7 +76,7 @@ namespace tomtom::core::transport
 
         if (device_count < 0)
         {
-            spdlog::error("Failed to get device list: {}", libusb_error_name(device_count));
+            // spdlog::error("Failed to get device list: {}", libusb_error_name(device_count));
             return false;
         }
 
@@ -104,7 +103,7 @@ namespace tomtom::core::transport
 
         if (!target_device)
         {
-            spdlog::error("Device not found: {}", usb_details.device_path);
+            // spdlog::error("Device not found: {}", usb_details.device_path);
             libusb_free_device_list(device_list, 1);
             return false;
         }
@@ -113,7 +112,7 @@ namespace tomtom::core::transport
         int result = libusb_open(target_device, &handle);
         if (result != LIBUSB_SUCCESS)
         {
-            spdlog::error("Failed to open device: {}", libusb_error_name(result));
+            // spdlog::error("Failed to open device: {}", libusb_error_name(result));
             libusb_free_device_list(device_list, 1);
             return false;
         }
@@ -126,11 +125,11 @@ namespace tomtom::core::transport
             if (result == LIBUSB_SUCCESS)
             {
                 kernel_driver_detached = true;
-                spdlog::debug("Kernel driver detached");
+                // spdlog::debug("Kernel driver detached");
             }
             else
             {
-                spdlog::warn("Failed to detach kernel driver: {}", libusb_error_name(result));
+                // spdlog::warn("Failed to detach kernel driver: {}", libusb_error_name(result));
             }
         }
 
@@ -150,7 +149,7 @@ namespace tomtom::core::transport
             }
             else
             {
-                spdlog::error("Failed to claim interface: {}", libusb_error_name(result));
+                // spdlog::error("Failed to claim interface: {}", libusb_error_name(result));
                 if (kernel_driver_detached)
                 {
                     libusb_attach_kernel_driver(handle, 0);
@@ -163,7 +162,7 @@ namespace tomtom::core::transport
 
         if (result != LIBUSB_SUCCESS)
         {
-            spdlog::error("Failed to claim interface after {} attempts", attempts);
+            // spdlog::error("Failed to claim interface after {} attempts", attempts);
             if (kernel_driver_detached)
             {
                 libusb_attach_kernel_driver(handle, 0);
@@ -205,15 +204,15 @@ namespace tomtom::core::transport
                             {
                                 input_endpoint_ = ep->bEndpointAddress;
                                 input_report_len_ = ep->wMaxPacketSize;
-                                spdlog::debug("Input endpoint: 0x{:02X}, max packet size: {}",
-                                              input_endpoint_, input_report_len_);
+                                // spdlog::debug("Input endpoint: 0x{:02X}, max packet size: {}",
+                                //   input_endpoint_, input_report_len_);
                             }
                             else
                             {
                                 output_endpoint_ = ep->bEndpointAddress;
                                 output_report_len_ = ep->wMaxPacketSize;
-                                spdlog::debug("Output endpoint: 0x{:02X}, max packet size: {}",
-                                              output_endpoint_, output_report_len_);
+                                // spdlog::debug("Output endpoint: 0x{:02X}, max packet size: {}",
+                                //   output_endpoint_, output_report_len_);
                             }
                         }
                     }
@@ -287,7 +286,7 @@ namespace tomtom::core::transport
 
                 if (result != LIBUSB_SUCCESS && result != LIBUSB_ERROR_TIMEOUT)
                 {
-                    spdlog::error("USB read failed: {}", libusb_error_name(result));
+                    // spdlog::error("USB read failed: {}", libusb_error_name(result));
                     return bytesCopied > 0 ? static_cast<int>(bytesCopied) : -1;
                 }
 
@@ -341,7 +340,7 @@ namespace tomtom::core::transport
 
         if (result != LIBUSB_SUCCESS)
         {
-            spdlog::error("USB write failed: {}", libusb_error_name(result));
+            // spdlog::error("USB write failed: {}", libusb_error_name(result));
             return -1;
         }
 
@@ -367,7 +366,7 @@ namespace tomtom::core::transport
 
         if (device_count < 0)
         {
-            spdlog::error("Failed to get device list: {}", libusb_error_name(device_count));
+            // spdlog::error("Failed to get device list: {}", libusb_error_name(device_count));
             release_libusb_context();
             return devices;
         }
@@ -446,10 +445,10 @@ namespace tomtom::core::transport
             libusb_close(handle);
 
             devices.push_back(info);
-            spdlog::debug("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Path={}",
-                          static_cast<uint16_t>(info.vendor_id),
-                          static_cast<uint16_t>(info.product_id),
-                          usb_details.device_path);
+            // spdlog::debug("Found TomTom device: VID=0x{:04X}, PID=0x{:04X}, Path={}",
+            //   static_cast<uint16_t>(info.vendor_id),
+            //   static_cast<uint16_t>(info.product_id),
+            //   usb_details.device_path);
         }
 
         libusb_free_device_list(device_list, 1);

@@ -31,3 +31,11 @@ Both files are deleted only when all the ttbin files are downloaded and removed 
 #define TTWATCH_FILE_TTBIN_DATA             (0x00910000)
 #define TTWATCH_FILE_ACTIVITY_SUMMARY       (0x00b30000)
 ```
+
+SDK modules:
+- Firmware (BLE, System, GPS): download from url and save locally + upload to watch + reboot watch; get firmware logs and save locally
+- GPS Quickfix data: download from url and save locally + upload to watch
+- Races: future module
+- Activities: list activities on watch, download activity (ttbin) and export to gpx, delete activity from watch, organize activities in folders (on local filesystem). If download all, then delete history summary and history data files from watch.
+- Manifests: future module
+- Preferences:

@@ -26,9 +26,7 @@ namespace tomtom::core::commands
 
         if (!end_of_list)
         {
-            definitions::FileId id;
-            id.value = tomtom::core::utils::hostToBigEndian(find_first_response.packet.payload.file_id);
-            files.push_back({id, find_first_response.packet.payload.file_size});
+            files.push_back({tomtom::core::utils::hostToBigEndian(find_first_response.packet.payload.file_id), find_first_response.packet.payload.file_size});
         }
 
         while (!end_of_list)
@@ -40,16 +38,14 @@ namespace tomtom::core::commands
 
             if (!end_of_list)
             {
-                definitions::FileId id;
-                id.value = tomtom::core::utils::hostToBigEndian(find_next_response.packet.payload.file_id);
-                files.push_back({id, find_next_response.packet.payload.file_size});
+                files.push_back({tomtom::core::utils::hostToBigEndian(find_next_response.packet.payload.file_id), find_next_response.packet.payload.file_size});
             }
         }
 
         return files;
     }
 
-    std::vector<uint8_t> FileOperations::readFile(definitions::FileId file_id)
+    std::vector<uint8_t> FileOperations::readFile(uint32_t file_id)
     {
         uint32_t file_size = 0;
 
@@ -72,7 +68,7 @@ namespace tomtom::core::commands
         while (!done)
         {
             definitions::ReadFileDataTx read_request;
-            read_request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+            read_request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
             read_request.payload.length = chunk_size;
 
             auto read_response = packet_handler_->transaction<definitions::ReadFileDataTx, definitions::ReadFileDataRx>(read_request);
@@ -96,7 +92,7 @@ namespace tomtom::core::commands
         return data;
     }
 
-    void FileOperations::writeFile(definitions::FileId file_id, const std::vector<uint8_t> &data)
+    void FileOperations::writeFile(uint32_t file_id, const std::vector<uint8_t> &data)
     {
         size_t total_written = 0;
         const size_t MAX_CHUNK_SIZE = 246;
@@ -109,7 +105,7 @@ namespace tomtom::core::commands
             size_t chunk_size = std::min(remaining, MAX_CHUNK_SIZE);
 
             definitions::WriteFileDataTx write_request;
-            write_request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+            write_request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
 
             std::vector<uint8_t> chunk_data(
                 data.begin() + total_written,
@@ -123,10 +119,10 @@ namespace tomtom::core::commands
         closeFile(file_id);
     }
 
-    void FileOperations::deleteFile(definitions::FileId file_id)
+    void FileOperations::deleteFile(uint32_t file_id)
     {
         definitions::DeleteFileTx request;
-        request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+        request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
 
         auto response = packet_handler_->transaction<definitions::DeleteFileTx, definitions::DeleteFileRx>(request);
 
@@ -136,10 +132,10 @@ namespace tomtom::core::commands
         }
     }
 
-    uint32_t FileOperations::getFileSize(definitions::FileId file_id)
+    uint32_t FileOperations::getFileSize(uint32_t file_id)
     {
         definitions::GetFileSizeTx request;
-        request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+        request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
 
         auto response = packet_handler_->transaction<definitions::GetFileSizeTx, definitions::GetFileSizeRx>(request);
 
@@ -151,12 +147,12 @@ namespace tomtom::core::commands
         return tomtom::core::utils::hostToBigEndian(response.packet.payload.file_size);
     }
 
-    void FileOperations::openFile(definitions::FileId file_id, FileOpenMode mode)
+    void FileOperations::openFile(uint32_t file_id, FileOpenMode mode)
     {
         if (mode == FileOpenMode::Read)
         {
             definitions::OpenFileReadTx open_request;
-            open_request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+            open_request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
             auto open_response = packet_handler_->transaction<definitions::OpenFileReadTx, definitions::OpenFileReadRx>(open_request);
 
             if (open_response.packet.payload.error != static_cast<uint32_t>(definitions::ProtocolError::SUCCESS))
@@ -167,7 +163,7 @@ namespace tomtom::core::commands
         else // FileOpenMode::Write
         {
             definitions::OpenFileWriteTx open_request;
-            open_request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+            open_request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
             auto open_response = packet_handler_->transaction<definitions::OpenFileWriteTx, definitions::OpenFileWriteRx>(open_request);
 
             if (open_response.packet.payload.error != static_cast<uint32_t>(definitions::ProtocolError::SUCCESS))
@@ -177,10 +173,10 @@ namespace tomtom::core::commands
         }
     }
 
-    void FileOperations::closeFile(definitions::FileId file_id, bool check_error)
+    void FileOperations::closeFile(uint32_t file_id, bool check_error)
     {
         definitions::CloseFileTx close_request;
-        close_request.payload.file_id = (definitions::FileId)tomtom::core::utils::hostToBigEndian(file_id);
+        close_request.payload.file_id = tomtom::core::utils::hostToBigEndian(file_id);
         auto close_response = packet_handler_->transaction<definitions::CloseFileTx, definitions::CloseFileRx>(close_request);
 
         if (check_error && close_response.packet.payload.error != static_cast<uint32_t>(definitions::ProtocolError::SUCCESS))

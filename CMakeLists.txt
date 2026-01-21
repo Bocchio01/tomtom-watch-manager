@@ -6,11 +6,11 @@ project(TomTomWatchManager VERSION 1.0 LANGUAGES CXX)
 # =========================================================
 option(BUILD_CORE "Build core library" ON)
 option(BUILD_SDK "Build SDK library" ON)
-option(BUILD_CLI "Build CLI client" OFF)
+option(BUILD_CLI "Build CLI client" ON)
 option(BUILD_GUI "Build GUI client" OFF)
 
-option(BUILD_TESTS "Build test executables" ON)
-option(BUILD_EXAMPLES "Build example executables" ON)
+option(BUILD_TESTS "Build test executables" OFF)
+option(BUILD_EXAMPLES "Build example executables" OFF)
 
 option(GENERATE_DOCS "Generate documentation with Doxygen" OFF)
 
@@ -79,6 +79,16 @@ if(BUILD_SDK OR BUILD_CLI OR BUILD_TESTS)
     set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(SPDLOG_INSTALL OFF CACHE BOOL "" FORCE)
     list(APPEND _fetch_deps spdlog)
+
+    message(STATUS "Fetching nlohmann/json...")
+    FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3
+        GIT_SHALLOW TRUE
+    )
+    set(JSON_BuildTests OFF CACHE INTERNAL "")
+    list(APPEND _fetch_deps json)
 endif()
 
 if(BUILD_CLI)
